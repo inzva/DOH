@@ -14,6 +14,27 @@
   (major1) == 4 && (major2) <  9 || \
   (major1) == 4 && (major2) == 9 && (minor) <= 1)
 
+/* package bytestring-0.10.8.1 */
+#define VERSION_bytestring "0.10.8.1"
+#define MIN_VERSION_bytestring(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  10 || \
+  (major1) == 0 && (major2) == 10 && (minor) <= 8)
+
+/* package http-client-0.5.7.0 */
+#define VERSION_http_client "0.5.7.0"
+#define MIN_VERSION_http_client(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  5 || \
+  (major1) == 0 && (major2) == 5 && (minor) <= 7)
+
+/* package http-client-tls-0.3.5.1 */
+#define VERSION_http_client_tls "0.3.5.1"
+#define MIN_VERSION_http_client_tls(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  3 || \
+  (major1) == 0 && (major2) == 3 && (minor) <= 5)
+
 /* package mtl-2.2.1 */
 #define VERSION_mtl "2.2.1"
 #define MIN_VERSION_mtl(major1,major2,minor) (\
@@ -98,7 +119,7 @@
   (major1) == 1 && (major2) <  24 || \
   (major1) == 1 && (major2) == 24 && (minor) <= 0)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-F4MZob0vNNzHLufpzBkmn8"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-B21IdDVt7RIE64a8X1jYs3"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-F4MZob0vNNzHLufpzBkmn8"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-B21IdDVt7RIE64a8X1jYs3"
 

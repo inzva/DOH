@@ -21,6 +21,9 @@ library
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10,
                        mtl,
-                       text
+                       text,
+                       http-client,
+                       http-client-tls,
+                       bytestring
   hs-source-dirs:      src
   default-language:    Haskell2010
