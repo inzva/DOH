@@ -8,20 +8,20 @@
 module Network.DigitalOcean.Types where
 
 -----------------------------------------------------------------
-import GHC.Generics
-import Data.Aeson
-import Data.Time.Clock
-import Control.Monad.State
-import Control.Monad.Identity
-import Control.Lens
+import           GHC.Generics
+import           Data.Aeson
+import           Data.Time.Clock
+import           Control.Monad.State
+import           Control.Monad.Identity
+import           Control.Lens
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
 import qualified Data.Text                 as T
 import qualified Data.ByteString           as BS
 -----------------------------------------------------------------
-import Data.Monoid
-import Data.List
+import           Data.Monoid
+import           Data.List
 -----------------------------------------------------------------
 
 newtype QueryParams = QueryParams [(String, String)]
@@ -67,31 +67,6 @@ type DoErr = T.Text
 newtype Response a = Response { unResponse :: a } deriving (Generic)
 
 -----------------------------------------------------------------
-
-data Account = Account
-  { _dropletLimit    :: Int
-  , _floatingIpLimit :: Int
-  , _email           :: String
-  , _uuid            :: String
-  , _emailVerified   :: Bool
-  , _status          :: String
-  , _statusMessage   :: String
-  } deriving (Show, Generic)
-
-instance FromJSON (Response Account) where
-  parseJSON (Object v) =
-    fmap Response $ parseJSON =<< (v .: "account")
-
-instance FromJSON Account where
-  parseJSON (Object v) =
-    Account
-      <$> v .: "droplet_limit"
-      <*> v .: "floating_ip_limit"
-      <*> v .: "email"
-      <*> v .: "uuid"
-      <*> v .: "email_verified"
-      <*> v .: "status"
-      <*> v .: "status_message"
 
 -- data Volume = Volume
 --   { _id             :: String

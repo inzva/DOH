@@ -6,9 +6,9 @@
 module Network.DigitalOcean.Utils.Pagination where
 
 -----------------------------------------------------------------
-import Data.Aeson
+import         Data.Aeson
 -----------------------------------------------------------------
-import Network.DigitalOcean.Types
+import         Network.DigitalOcean.Types
 -----------------------------------------------------------------
 
 paginate :: (Paginatable a, FromJSON (PaginationState a)) => (String -> DO (PaginationState a)) -> PaginationState a -> DO (PaginationState a)

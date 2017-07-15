@@ -2,7 +2,9 @@
 
 module Network.DigitalOcean.Services.Region where
 
-import Data.Aeson
+-----------------------------------------------------------------
+import        Data.Aeson
+-----------------------------------------------------------------
 
 data Region = Region
   { _slug :: String

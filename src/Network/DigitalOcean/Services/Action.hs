@@ -3,9 +3,12 @@
 
 module Network.DigitalOcean.Services.Action where
 
-import Data.Aeson
-import Network.DigitalOcean.Types
-import Data.Time.Clock
+-----------------------------------------------------------------
+import        Data.Aeson
+import        Data.Time.Clock
+-----------------------------------------------------------------
+import        Network.DigitalOcean.Types
+-----------------------------------------------------------------
 
 data Action = Action
   { _id            :: Int
