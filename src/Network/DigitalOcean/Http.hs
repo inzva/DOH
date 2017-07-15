@@ -52,7 +52,7 @@ get' _ = makeRequest (Proxy :: Proxy a) Get
 get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> Maybe QueryParams -> DO a
 get _ endp = get' (Proxy :: Proxy a) (baseURI <> endp)
 
-getPaginated :: forall proxy a. (FromJSON a, Paginatable a, FromJSON (PaginationState a)) => proxy a -> Maybe PaginationConfig -> String -> DO [a]
+getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> String -> DO [a]
 getPaginated _ config url = 
   case config of
     Just config -> do
