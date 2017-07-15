@@ -37,3 +37,11 @@ getAction id' =
 getRegions :: DO [Region]
 getRegions =
   unResponse <$> get (Proxy :: Proxy (Response [Region])) "/regions" Nothing
+
+getVolumes :: DO [Volume]
+getVolumes =
+  unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" Nothing
+
+getVolume :: Int -> DO Volume
+getVolume id' =
+  unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" ++ show id') Nothing

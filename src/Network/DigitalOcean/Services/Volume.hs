@@ -19,7 +19,7 @@ data Volume = Volume
   , volumeDescription :: String
   , volumeSizeGigabytes :: Int
   , volumeCreatedAt :: UTCTime
-  }
+  } deriving Show
 
 instance FromJSON (Response [Volume]) where
   parseJSON (Object v) =
