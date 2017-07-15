@@ -83,7 +83,7 @@ getActions = get (Proxy :: Proxy (PaginationState Action)) "/actions"
 getClient :: IO Client
 getClient = Client . BSC.pack <$> getEnv "DO_TOKEN"
 
-paginate :: forall proxy a. (Paginatable a, FromJSON (PaginationState a)) => proxy a -> PaginationState a -> DO (PaginationState a)
-paginate _ s = do
+paginate :: (Paginatable a, FromJSON (PaginationState a)) => PaginationState a -> DO (PaginationState a)
+paginate s = do
   newState <- get' (Proxy :: Proxy (PaginationState a)) $ nextUrl s
   return $ s { curr = curr s ++ curr newState }
