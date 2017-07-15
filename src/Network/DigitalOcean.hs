@@ -58,7 +58,7 @@ makeRequest method endp = do
                                , requestHeaders = [("Authorization", "Bearer " `BS.append` apiKey client)]
                                }
   liftIO $ responseBody <$> httpLbs request manager
-  
+
 get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> DO a
 get _ endp = do
   response <- makeRequest Get endp
@@ -66,11 +66,14 @@ get _ endp = do
     Left err -> throwError err
     Right resource -> return resource
 
-runReq :: Client -> DO a -> IO (Either String a)
-runReq client do' = runExceptT $ runReaderT (runDO do') client
+runDo' :: Client -> DO a -> IO (Either String a)
+runDo' client do' = runExceptT $ runReaderT (runDO do') client
 
 getAccounts :: DO Account
 getAccounts = get (Proxy :: Proxy Account) "/account" 
+
+getActions :: DO (PaginationState Action)
+getActions = get (Proxy :: Proxy (PaginationState Action)) "/actions" 
 
 getClient :: IO Client
 getClient = Client . BSC.pack <$> getEnv "DO_TOKEN"

@@ -56,6 +56,13 @@
   (major1) == 1 && (major2) <  2 || \
   (major1) == 1 && (major2) == 2 && (minor) <= 2)
 
+/* package time-1.6.0.1 */
+#define VERSION_time "1.6.0.1"
+#define MIN_VERSION_time(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  6 || \
+  (major1) == 1 && (major2) == 6 && (minor) <= 0)
+
 /* package uri-0.1.6.4 */
 #define VERSION_uri "0.1.6.4"
 #define MIN_VERSION_uri(major1,major2,minor) (\
@@ -140,7 +147,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-9ShQpk4L7u1EiD1b2wBM7t"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-3xlunnK1Mxo2CiCjtdPd5h"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-9ShQpk4L7u1EiD1b2wBM7t"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-3xlunnK1Mxo2CiCjtdPd5h"
 
