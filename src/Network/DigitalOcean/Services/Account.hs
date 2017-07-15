@@ -12,13 +12,13 @@ import        Network.DigitalOcean.Types
 -----------------------------------------------------------------
 
 data Account = Account
-  { _dropletLimit    :: Int
-  , _floatingIpLimit :: Int
-  , _email           :: String
-  , _uuid            :: String
-  , _emailVerified   :: Bool
-  , _status          :: String
-  , _statusMessage   :: String
+  { accountDropletLimit    :: Int
+  , accountFloatingIpLimit :: Int
+  , accountEmail           :: String
+  , accountUuid            :: String
+  , accountEmailVerified   :: Bool
+  , accountStatus          :: String
+  , accountStatusMessage   :: String
   } deriving (Show, Generic)
 
 instance FromJSON (Response Account) where

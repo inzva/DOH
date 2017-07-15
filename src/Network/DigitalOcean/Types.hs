@@ -65,15 +65,3 @@ newtype Client = Client { apiKey :: BS.ByteString }
 type DoErr = T.Text
 
 newtype Response a = Response { unResponse :: a } deriving (Generic)
-
------------------------------------------------------------------
-
--- data Volume = Volume
---   { _id             :: String
---   , _region         :: Region
---   , _dropletIds     :: [Int]
---   , _name           :: String
---   , _description    :: String
---   , _sizeGigabytes  :: Int
---   , _createdAt      :: UTCTime
---   }

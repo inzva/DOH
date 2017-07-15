@@ -14,11 +14,11 @@ instance FromJSON (Response [Region]) where
     fmap Response $ parseJSON =<< (v .: "regions")
 
 data Region = Region
-  { _slug :: String
-  , _name :: String
-  , _sizes :: [String] -- TODO: Make a type
-  , _available :: Bool
-  , _features :: [String] -- TODO: Make a type
+  { regionSlug      :: String
+  , regionName      :: String
+  , regionSizes     :: [String] -- TODO: Make a type
+  , regionAvailable :: Bool
+  , regionFeatures  :: [String] -- TODO: Make a type
   } deriving (Show)
 
 instance FromJSON Region where

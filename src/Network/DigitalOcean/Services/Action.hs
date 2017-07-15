@@ -11,14 +11,14 @@ import        Network.DigitalOcean.Types
 -----------------------------------------------------------------
 
 data Action = Action
-  { _id            :: Int
+  { actionId            :: Int
   -- , _status        :: String -- TODO: Make a type
-  , _type'         :: String
-  , _startedAt     :: UTCTime
-  , _completedAt   :: UTCTime
-  , _resourceId    :: Int
-  , _resourceType  :: String -- TODO: Make a type
-  , _regionSlug    :: String
+  , actionType'         :: String
+  , actionStartedAt     :: UTCTime
+  , actionCompletedAt   :: UTCTime
+  , actionResourceId    :: Int
+  , actionResourceType  :: String -- TODO: Make a type
+  , actionRegionSlug    :: Maybe String
   } deriving (Show)
 
 instance FromJSON (Response Action) where
@@ -35,7 +35,7 @@ instance FromJSON Action where
       <*> v .: "completed_at"
       <*> v .: "resource_id"
       <*> v .: "resource_type"
-      <*> v .: "region_slug"
+      <*> v .:? "region_slug"
 
 instance FromJSON (PaginationState Action) where
   parseJSON (Object v) = do
@@ -49,4 +49,3 @@ instance FromJSON (PaginationState Action) where
     return $ PaginationState actions page next total False
 
 instance Paginatable Action where
-
