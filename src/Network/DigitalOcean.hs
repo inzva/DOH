@@ -36,4 +36,4 @@ getAction id' =
 
 getRegions :: DO [Region]
 getRegions =
-  get (Proxy :: Proxy [Region]) "/regions" Nothing
+  unResponse <$> get (Proxy :: Proxy (Response [Region])) "/regions" Nothing
