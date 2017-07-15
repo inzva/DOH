@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.DigitalOcean.Http where
   
@@ -21,7 +22,11 @@ import           Network.HTTP.Types.Status (statusCode)
 import           Text.URI
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
+import           Network.DigitalOcean.Utils.Pagination
 -----------------------------------------------------------------
+
+baseURI :: String
+baseURI = "https://api.digitalocean.com/v2"
 
 makeRequest :: forall proxy a. (FromJSON a) => proxy a -> RequestMethod -> Endpoint -> Maybe QueryParams -> DO a
 makeRequest _ method uri queryParams = do
@@ -47,5 +52,12 @@ get' _ = makeRequest (Proxy :: Proxy a) Get
 get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> Maybe QueryParams -> DO a
 get _ endp = get' (Proxy :: Proxy a) (baseURI <> endp)
 
-baseURI :: String
-baseURI = "https://api.digitalocean.com/v2"
+getPaginated :: forall proxy a. (FromJSON a, Paginatable a, FromJSON (PaginationState a)) => proxy a -> Maybe PaginationConfig -> String -> DO [a]
+getPaginated _ config url = 
+  case config of
+    Just config -> do
+      let queryParams = paginationQueryParams config
+      pagination <- get (Proxy :: Proxy (PaginationState a)) url (Just queryParams)
+      curr <$> paginateUntil config pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) url Nothing)
+    Nothing ->
+      curr <$> get (Proxy :: Proxy (PaginationState a)) url Nothing

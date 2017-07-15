@@ -27,11 +27,5 @@ runDo' client do' = runExceptT $ runReaderT (runDO do') client
 getAccounts :: DO Account
 getAccounts = get (Proxy :: Proxy Account) "/account" Nothing
 
-getActions :: Maybe PaginationConfig -> DO Int
-getActions = \case
-  Just config -> do
-    let queryParams = paginationQueryParams config
-    pagination <- get (Proxy :: Proxy (PaginationState Action)) "/actions" (Just queryParams)
-    length . curr <$> paginateUntil config pagination (\url -> get' (Proxy :: Proxy (PaginationState Action)) url Nothing)
-  Nothing ->
-    length . curr <$> get (Proxy :: Proxy (PaginationState Action)) "/actions" Nothing
+getActions :: Maybe PaginationConfig -> DO [Action]
+getActions config = getPaginated (Proxy :: Proxy Action) config "/actions"
