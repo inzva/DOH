@@ -25,7 +25,11 @@ runDo' :: Client -> DO a -> IO (Either String a)
 runDo' client do' = runExceptT $ runReaderT (runDO do') client
 
 getAccounts :: DO Account
-getAccounts = get (Proxy :: Proxy Account) "/account" Nothing
+getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) "/account" Nothing
 
 getActions :: Maybe PaginationConfig -> DO [Action]
 getActions config = getPaginated (Proxy :: Proxy Action) config "/actions"
+
+getAction :: Int -> DO Action
+getAction id' =
+  unResponse <$> get (Proxy :: Proxy (Response Action)) ("/actions/" ++ show id') Nothing

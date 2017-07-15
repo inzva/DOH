@@ -41,7 +41,7 @@ makeRequest _ method uri queryParams = do
                                }
   response <- liftIO $ httpLbs request manager
   let respStatus = statusCode $ responseStatus response
-  when (respStatus < 200 || respStatus > 300) $ throwError $ "Non-success response: " <> show respStatus
+  when (respStatus < 200 || respStatus > 300) $ throwError $ "Non-success response: " <> show respStatus <> "Body:" <> show (responseBody response)
   case (eitherDecode (responseBody response) :: Either String a) of
     Left err -> throwError $ "Error occured for response body:" <> BSC.unpack (LBS.toStrict $ responseBody response) <> err
     Right resource -> return resource

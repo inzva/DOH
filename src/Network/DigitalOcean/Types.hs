@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Network.DigitalOcean.Types where
 
@@ -63,6 +64,8 @@ newtype Client = Client { apiKey :: BS.ByteString }
 
 type DoErr = T.Text
 
+newtype Response a = Response { unResponse :: a } deriving (Generic)
+
 -----------------------------------------------------------------
 
 data Account = Account
@@ -75,17 +78,20 @@ data Account = Account
   , _statusMessage   :: String
   } deriving (Show, Generic)
 
+instance FromJSON (Response Account) where
+  parseJSON (Object v) =
+    fmap Response $ parseJSON =<< (v .: "account")
+  
 instance FromJSON Account where
-  parseJSON (Object v) = do
-    v' <- v .: "account"
+  parseJSON (Object v) =
     Account
-      <$> v' .: "droplet_limit"
-      <*> v' .: "floating_ip_limit"
-      <*> v' .: "email"
-      <*> v' .: "uuid"
-      <*> v' .: "email_verified"
-      <*> v' .: "status"
-      <*> v' .: "status_message"
+      <$> v .: "droplet_limit"
+      <*> v .: "floating_ip_limit"
+      <*> v .: "email"
+      <*> v .: "uuid"
+      <*> v .: "email_verified"
+      <*> v .: "status"
+      <*> v .: "status_message"
 
 -----------------------------------------------------------------
 
@@ -99,6 +105,10 @@ data Action = Action
   , _resourceType  :: String -- TODO: Make a type
   , _regionSlug    :: String
   } deriving (Show)
+
+instance FromJSON (Response Action) where
+  parseJSON (Object v) =
+    fmap Response $ parseJSON =<< (v .: "action")
 
 instance FromJSON Action where
   parseJSON (Object v) =
