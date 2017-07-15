@@ -42,6 +42,13 @@
   (major1) == 0 && (major2) <  3 || \
   (major1) == 0 && (major2) == 3 && (minor) <= 5)
 
+/* package lens-4.15.3 */
+#define VERSION_lens "4.15.3"
+#define MIN_VERSION_lens(major1,major2,minor) (\
+  (major1) <  4 || \
+  (major1) == 4 && (major2) <  15 || \
+  (major1) == 4 && (major2) == 15 && (minor) <= 3)
+
 /* package mtl-2.2.1 */
 #define VERSION_mtl "2.2.1"
 #define MIN_VERSION_mtl(major1,major2,minor) (\
@@ -147,7 +154,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-3xlunnK1Mxo2CiCjtdPd5h"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-9lAFrfhkf1O4ewclijvStJ"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-3xlunnK1Mxo2CiCjtdPd5h"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-9lAFrfhkf1O4ewclijvStJ"
 

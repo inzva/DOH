@@ -1,6 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.DigitalOcean where
 
@@ -20,6 +21,7 @@ import           Data.Maybe              (fromJust, isNothing)
 import           Data.Monoid             ((<>))
 import           Data.Aeson
 import           Data.Proxy
+import           Control.Lens
 ------------------------------------------------
 import           Network.DigitalOcean.Types
 
@@ -59,12 +61,15 @@ makeRequest method endp = do
                                }
   liftIO $ responseBody <$> httpLbs request manager
 
-get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> DO a
-get _ endp = do
-  response <- makeRequest Get endp
+get' :: forall proxy a. (FromJSON a) => proxy a -> String -> DO a
+get' _ url = do
+  response <- makeRequest Get url
   case (eitherDecode response :: Either String a) of
     Left err -> throwError err
     Right resource -> return resource
+  
+get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> DO a
+get _ endp = get' (Proxy :: Proxy a) $ baseURI <> endp
 
 runDo' :: Client -> DO a -> IO (Either String a)
 runDo' client do' = runExceptT $ runReaderT (runDO do') client
@@ -77,3 +82,8 @@ getActions = get (Proxy :: Proxy (PaginationState Action)) "/actions"
 
 getClient :: IO Client
 getClient = Client . BSC.pack <$> getEnv "DO_TOKEN"
+
+paginate :: forall proxy a. (Paginatable a, FromJSON (PaginationState a)) => proxy a -> PaginationState a -> DO (PaginationState a)
+paginate _ s = do
+  newState <- get' (Proxy :: Proxy (PaginationState a)) $ nextUrl s
+  return $ s { curr = curr s ++ curr newState }

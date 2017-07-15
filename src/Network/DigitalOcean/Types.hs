@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Network.DigitalOcean.Types where
 
@@ -10,6 +10,7 @@ import Data.Aeson
 import Data.Time.Clock
 import Control.Monad.State
 import Control.Monad.Identity
+import Control.Lens
 
 data Account = Account
   { _dropletLimit    :: Int
@@ -36,7 +37,7 @@ instance FromJSON Account where
 data Action = Action
   { _id            :: Int
   -- , _status        :: String -- TODO: Make a type
-  , _type          :: String
+  , _type'         :: String
   , _startedAt     :: UTCTime
   , _completedAt   :: UTCTime
   , _resourceId    :: Int
@@ -44,7 +45,11 @@ data Action = Action
   , _regionSlug    :: String
   } deriving (Show)
 
-data PaginationState a = PaginationState
+class FromJSON a => Paginatable a where
+
+instance Paginatable Action where
+
+data Paginatable a => PaginationState a = PaginationState
   { curr :: [a]
   , nextUrl :: String
   , lastUrl :: String
