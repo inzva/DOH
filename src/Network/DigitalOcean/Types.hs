@@ -45,14 +45,16 @@ data Action = Action
   , _regionSlug    :: String
   } deriving (Show)
 
-class FromJSON a => Paginatable a where
+class (FromJSON a, Show a) => Paginatable a where
 
 instance Paginatable Action where
 
 data Paginatable a => PaginationState a = PaginationState
-  { curr :: [a]
-  , nextUrl :: String
-  , lastUrl :: String
+  { curr     :: [a]
+  , page     :: Int
+  , nextUrl  :: Maybe String
+  , total    :: Int
+  , isLast   :: Bool
   } deriving (Show)
 
 instance FromJSON (PaginationState Action) where
@@ -61,9 +63,10 @@ instance FromJSON (PaginationState Action) where
     links <- v .: "links"
     -- meta <- v .: "meta"
     pages <- links .: "pages"
-    next <- pages .: "next"
-    last <- pages .: "last"
-    return $ PaginationState actions next last
+    next <- pages .:? "next"
+    total <- v .: "meta" >>= (.: "total")
+    let page = 1
+    return $ PaginationState actions page next total False
 
 instance FromJSON Action where
   parseJSON (Object v) =

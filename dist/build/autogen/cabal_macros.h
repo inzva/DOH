@@ -42,6 +42,13 @@
   (major1) == 0 && (major2) <  3 || \
   (major1) == 0 && (major2) == 3 && (minor) <= 5)
 
+/* package http-types-0.9.1 */
+#define VERSION_http_types "0.9.1"
+#define MIN_VERSION_http_types(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  9 || \
+  (major1) == 0 && (major2) == 9 && (minor) <= 1)
+
 /* package lens-4.15.3 */
 #define VERSION_lens "4.15.3"
 #define MIN_VERSION_lens(major1,major2,minor) (\
@@ -154,7 +161,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-9lAFrfhkf1O4ewclijvStJ"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-JGmSXIGQOuXAefA6Hpe6Si"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-9lAFrfhkf1O4ewclijvStJ"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-JGmSXIGQOuXAefA6Hpe6Si"
 
