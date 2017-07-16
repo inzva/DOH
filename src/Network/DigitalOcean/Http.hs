@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Network.DigitalOcean.Http where
   
@@ -14,6 +15,7 @@ import           Network.HTTP.Client.TLS
 import           Data.Aeson
 import           Data.Proxy
 import           Data.Monoid
+import           Data.Bool                 (bool)
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
@@ -45,7 +47,8 @@ makeRequest _ method uri queryParams mbPayload = do
   response <- liftIO $ httpLbs request' manager
   let respStatus = statusCode $ responseStatus response
   when (respStatus < 200 || respStatus > 300) $ throwError $ "Non-success response: " <> show respStatus <> "Body:" <> show (responseBody response)
-  case (eitherDecode (responseBody response) :: Either String a) of
+  let body = bool (responseBody response) "[]" (respStatus == 204)
+  case (eitherDecode body :: Either String a) of
     Left err -> throwError $ "Error occured for response body:" <> BSC.unpack (LBS.toStrict $ responseBody response) <> err
     Right resource -> return resource
 
@@ -60,6 +63,12 @@ post' _ uri queryParams payload = makeRequest (Proxy :: Proxy a) Post uri queryP
 
 post :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> Endpoint -> Maybe QueryParams -> p -> DO a
 post _ endp = post' (Proxy :: Proxy a) (baseURI <> endp)
+
+delete' :: String -> Maybe QueryParams -> DO ()
+delete' uri queryParams = makeRequest (Proxy :: Proxy ()) Delete uri queryParams (Just EmptyPayload)
+
+delete :: Endpoint -> Maybe QueryParams -> DO ()
+delete endp = delete' (baseURI <> endp)
 
 getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> String -> DO [a]
 getPaginated _ config url = 

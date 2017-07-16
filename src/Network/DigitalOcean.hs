@@ -64,3 +64,7 @@ getSnapshots onlyVolumes = do
 getSnapshot :: Int -> DO Snapshot
 getSnapshot id' =
   unResponse <$> get (Proxy :: Proxy (Response Snapshot)) ("/snapshots/" <> show id') Nothing
+
+deleteSnapshot :: Int -> DO ()
+deleteSnapshot id' =
+  delete ("/snapshots/" <> show id') Nothing

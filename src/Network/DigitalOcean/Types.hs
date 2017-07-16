@@ -32,11 +32,13 @@ data RequestMethod =
     Get
   | Post
   | Put
+  | Delete
 
 instance Show RequestMethod where
   show Get  = "GET"
   show Post = "POST"
   show Put  = "PUT"
+  show Delete  = "DELETE"
 
 instance Show QueryParams where
   show (QueryParams []) = ""
