@@ -46,6 +46,11 @@ getVolume :: Int -> DO Volume
 getVolume id' =
   unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" ++ show id') Nothing
 
-createVolume :: VolumePayload -> DO ()
+createVolume :: VolumePayload -> DO Volume
 createVolume =
-  post (Proxy :: Proxy ()) "/volumes" Nothing
+  fmap unResponse . post (Proxy :: Proxy (Response Volume)) "/volumes" Nothing
+
+getVolumesByName :: String -> String -> DO [Volume]
+getVolumesByName region name =
+  let queryParams = Just $ QueryParams [("region", region), ("name", name)] in
+  unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" queryParams
