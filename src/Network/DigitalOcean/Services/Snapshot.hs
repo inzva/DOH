@@ -40,3 +40,12 @@ instance FromJSON Snapshot where
       <*> v .: "resource_type"
       <*> v .: "min_disk_size"
       <*> v .: "size_gigabytes"
+
+data SnapshotPayload = SnapshotPayload
+  { name :: String }
+
+instance ToJSON SnapshotPayload where
+  toJSON (SnapshotPayload name) = 
+    object [ "name" .= name ]
+
+instance Payload SnapshotPayload where

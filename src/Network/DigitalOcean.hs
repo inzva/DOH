@@ -75,3 +75,19 @@ getSnapshot id' =
 deleteSnapshot :: Int -> DO ()
 deleteSnapshot id' =
   delete ("/snapshots/" <> show id') Nothing
+
+getSnapshotsOfVolume :: String -> DO [Snapshot]
+getSnapshotsOfVolume volumeId =
+  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
+
+createSnapshotOfVolume :: String -> SnapshotPayload -> DO Snapshot
+createSnapshotOfVolume volumeId =
+  fmap unResponse . post (Proxy :: Proxy (Response Snapshot)) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
+
+deleteVolume :: String -> DO ()
+deleteVolume id' =
+  delete ("/volumes/" <> show id') Nothing
+
+deleteVolumeByName :: String -> String -> DO ()
+deleteVolumeByName region name =
+  delete "/volumes" . Just $ QueryParams [("region", region), ("name", name)]
