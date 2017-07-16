@@ -41,7 +41,7 @@ instance FromJSON Snapshot where
       <*> v .: "min_disk_size"
       <*> v .: "size_gigabytes"
 
-data SnapshotPayload = SnapshotPayload
+newtype SnapshotPayload = SnapshotPayload
   { name :: String }
 
 instance ToJSON SnapshotPayload where
@@ -49,3 +49,5 @@ instance ToJSON SnapshotPayload where
     object [ "name" .= name ]
 
 instance Payload SnapshotPayload where
+
+type SnapshotId = String

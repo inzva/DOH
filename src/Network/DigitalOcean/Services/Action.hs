@@ -25,6 +25,10 @@ instance FromJSON (Response Action) where
   parseJSON (Object v) =
     fmap Response $ parseJSON =<< (v .: "action")
 
+instance FromJSON (Response [Action]) where
+  parseJSON (Object v) =
+    fmap Response $ parseJSON =<< (v .: "actions")
+
 instance FromJSON Action where
   parseJSON (Object v) =
     Action
@@ -49,3 +53,5 @@ instance FromJSON (PaginationState Action) where
     return $ PaginationState actions page next total False
 
 instance Paginatable Action where
+
+type ActionId = Int

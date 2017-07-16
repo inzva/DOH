@@ -68,23 +68,23 @@ getSnapshots resourceType = do
   let queryParams = maybe Nothing (\res -> Just $ QueryParams [("resource_type", show res)]) resourceType
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) "/snapshots" queryParams
 
-getSnapshot :: Int -> DO Snapshot
+getSnapshot :: SnapshotId -> DO Snapshot
 getSnapshot id' =
   unResponse <$> get (Proxy :: Proxy (Response Snapshot)) ("/snapshots/" <> show id') Nothing
 
-deleteSnapshot :: Int -> DO ()
+deleteSnapshot :: SnapshotId -> DO ()
 deleteSnapshot id' =
   delete ("/snapshots/" <> show id') Nothing
 
-getSnapshotsOfVolume :: String -> DO [Snapshot]
+getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
 getSnapshotsOfVolume volumeId =
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
 
-createSnapshotOfVolume :: String -> SnapshotPayload -> DO Snapshot
+createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
 createSnapshotOfVolume volumeId =
   fmap unResponse . post (Proxy :: Proxy (Response Snapshot)) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
 
-deleteVolume :: String -> DO ()
+deleteVolume :: VolumeId -> DO ()
 deleteVolume id' =
   delete ("/volumes/" <> show id') Nothing
 
@@ -92,11 +92,13 @@ deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
   delete "/volumes" . Just $ QueryParams [("region", region), ("name", name)]
 
-performSingleVolumeAction :: Int -> VolumeAction -> DO Action
-performSingleVolumeAction volumeId action = unResponse <$> post (Proxy :: Proxy (Response Action)) ("/volumes/" <> show volumeId <> "actions") Nothing action
+performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
+performSingleVolumeAction volumeId action =
+  unResponse <$> post (Proxy :: Proxy (Response Action)) ("/volumes/" <> show volumeId <> "/actions") Nothing action
 
 performListVolumeAction :: VolumeAction -> DO Action
-performListVolumeAction action = unResponse <$> post (Proxy :: Proxy (Response Action)) "/volumes/actions" Nothing action
+performListVolumeAction action =
+  unResponse <$> post (Proxy :: Proxy (Response Action)) "/volumes/actions" Nothing action
 
 performVolumeAction :: VolumeAction -> DO Action
 performVolumeAction action@(Attach volumeId _ _) = performSingleVolumeAction volumeId action
@@ -104,3 +106,7 @@ performVolumeAction action@(Detach volumeId _ _) = performSingleVolumeAction vol
 performVolumeAction action@(Resize volumeId _ _) = performSingleVolumeAction volumeId action
 performVolumeAction action@AttachByName {}       = performListVolumeAction action
 performVolumeAction action@DetachByName {}       = performListVolumeAction action
+
+getVolumeActions :: VolumeId -> DO [Action]
+getVolumeActions volumeId =
+  unResponse <$> get (Proxy :: Proxy (Response [Action])) ("/volumes/" <> volumeId <> "/actions") Nothing

@@ -60,7 +60,7 @@ instance ToJSON VolumePayload where
 
 instance Payload VolumePayload where
 
-type VolumeId   = Int
+type VolumeId   = String
 type DropletId  = Int
 type RegionSlug = String
 type VolumeName = String
