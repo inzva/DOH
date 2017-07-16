@@ -56,9 +56,16 @@ getVolumesByName region name =
   let queryParams = Just $ QueryParams [("region", region), ("name", name)] in
   unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" queryParams
 
-getSnapshots :: Bool -> DO [Snapshot]
-getSnapshots onlyVolumes = do
-  let queryParams = bool Nothing (Just $ QueryParams [("resource_type", "volume")]) onlyVolumes
+data ResourceType = VolumeResource
+                  | DropletResource
+
+instance Show ResourceType where
+  show VolumeResource = "volume"
+  show DropletResource = "droplet"
+
+getSnapshots :: Maybe ResourceType -> DO [Snapshot]
+getSnapshots resourceType = do
+  let queryParams = maybe Nothing (\res -> Just $ QueryParams [("resource_type", show res)]) resourceType
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) "/snapshots" queryParams
 
 getSnapshot :: Int -> DO Snapshot
