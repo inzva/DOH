@@ -17,7 +17,7 @@ data Volume = Volume
   , volumeDropletIds :: [Int]
   , volumeName :: String
   , volumeDescription :: String
-  , volumeSizeGigabytes :: Int
+  , volumeSizeGigabytes :: Double
   , volumeCreatedAt :: UTCTime
   } deriving Show
 

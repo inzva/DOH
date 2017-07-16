@@ -17,8 +17,8 @@ data Snapshot = Snapshot
   , snapshotRegions        :: [String]
   , snapshotResourceId     :: String
   , snapshotResourceType   :: String
-  , snapshotMinDiskSize    :: Int
-  , snapshotSizeGigabytes  :: Int
+  , snapshotMinDiskSize    :: Double
+  , snapshotSizeGigabytes  :: Double
   } deriving (Show)
 
 instance FromJSON (Response [Snapshot]) where

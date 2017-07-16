@@ -45,7 +45,7 @@ getVolumes =
 
 getVolume :: Int -> DO Volume
 getVolume id' =
-  unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" ++ show id') Nothing
+  unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" <> show id') Nothing
 
 createVolume :: VolumePayload -> DO Volume
 createVolume =
@@ -60,3 +60,7 @@ getSnapshots :: Bool -> DO [Snapshot]
 getSnapshots onlyVolumes = do
   let queryParams = bool Nothing (Just $ QueryParams [("resource_type", "volume")]) onlyVolumes
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) "/snapshots" queryParams
+
+getSnapshot :: Int -> DO Snapshot
+getSnapshot id' =
+  unResponse <$> get (Proxy :: Proxy (Response Snapshot)) ("/snapshots/" <> show id') Nothing
