@@ -73,5 +73,4 @@ class (ToJSON a) => Payload a
 data EmptyPayload = EmptyPayload
 instance Payload EmptyPayload where
 instance ToJSON EmptyPayload where
-  toJSON EmptyPayload =
-    object []
+  toJSON EmptyPayload = object []

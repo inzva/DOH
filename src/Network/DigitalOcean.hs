@@ -91,3 +91,16 @@ deleteVolume id' =
 deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
   delete "/volumes" . Just $ QueryParams [("region", region), ("name", name)]
+
+performSingleVolumeAction :: Int -> VolumeAction -> DO Action
+performSingleVolumeAction volumeId action = unResponse <$> post (Proxy :: Proxy (Response Action)) ("/volumes/" <> show volumeId <> "actions") Nothing action
+
+performListVolumeAction :: VolumeAction -> DO Action
+performListVolumeAction action = unResponse <$> post (Proxy :: Proxy (Response Action)) "/volumes/actions" Nothing action
+
+performVolumeAction :: VolumeAction -> DO Action
+performVolumeAction action@(Attach volumeId _ _) = performSingleVolumeAction volumeId action
+performVolumeAction action@(Detach volumeId _ _) = performSingleVolumeAction volumeId action
+performVolumeAction action@(Resize volumeId _ _) = performSingleVolumeAction volumeId action
+performVolumeAction action@AttachByName {}       = performListVolumeAction action
+performVolumeAction action@DetachByName {}       = performListVolumeAction action

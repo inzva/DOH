@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Network.DigitalOcean.Services.Volume where
 
@@ -58,3 +59,46 @@ instance ToJSON VolumePayload where
            ]
 
 instance Payload VolumePayload where
+
+type VolumeId   = Int
+type DropletId  = Int
+type RegionSlug = String
+type VolumeName = String
+type Size       = Int
+
+data VolumeAction =
+    Attach VolumeId DropletId RegionSlug
+  | Detach VolumeId DropletId RegionSlug
+  | Resize VolumeId Size RegionSlug
+  | AttachByName VolumeName DropletId RegionSlug
+  | DetachByName VolumeName DropletId RegionSlug
+
+instance Payload VolumeAction where
+instance ToJSON VolumeAction where
+  toJSON (Attach _ dropletId region) =
+    object [ "droplet_id".= dropletId
+           , "region"    .= region
+           , "type"      .= ("attach" :: String)
+           ]
+  toJSON (Detach _ dropletId region) =
+    object [ "droplet_id" .= dropletId
+           , "region"     .= region
+           , "type"       .= ("detach" :: String)
+           ]
+  toJSON (Resize _ size region) =
+    object [ "size" .= size
+           , "region"     .= region
+           , "type"       .= ("resize" :: String)
+           ]
+  toJSON (AttachByName volumeName dropletId region) =
+    object [ "droplet_id" .= dropletId
+           , "region"     .= region
+           , "volume_name".= volumeName
+           , "type"       .= ("attach" :: String)
+           ]
+  toJSON (DetachByName volumeName dropletId region) =
+    object [ "droplet_id" .= dropletId
+           , "region"     .= region
+           , "volume_name".= volumeName
+           , "type"       .= ("detach" :: String)
+           ]
