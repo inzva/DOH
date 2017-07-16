@@ -9,10 +9,6 @@ import        Data.Aeson
 import        Network.DigitalOcean.Types
 -----------------------------------------------------------------
 
-instance FromJSON (Response [Region]) where
-  parseJSON (Object v) =
-    fmap Response $ parseJSON =<< (v .: "regions")
-
 data Region = Region
   { regionSlug      :: String
   , regionName      :: String
@@ -20,6 +16,10 @@ data Region = Region
   , regionAvailable :: Bool
   , regionFeatures  :: [String] -- TODO: Make a type
   } deriving (Show)
+
+instance FromJSON (Response [Region]) where
+  parseJSON (Object v) =
+    fmap Response $ parseJSON =<< (v .: "regions")
 
 instance FromJSON Region where
   parseJSON (Object v) =

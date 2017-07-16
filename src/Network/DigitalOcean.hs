@@ -14,6 +14,7 @@ import           Data.Proxy
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
+import           Data.Bool                 (bool)
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
 import           Network.DigitalOcean.Http
@@ -54,3 +55,8 @@ getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
   let queryParams = Just $ QueryParams [("region", region), ("name", name)] in
   unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" queryParams
+
+getSnapshots :: Bool -> DO [Snapshot]
+getSnapshots onlyVolumes = do
+  let queryParams = bool Nothing (Just $ QueryParams [("resource_type", "volume")]) onlyVolumes
+  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) "/snapshots" queryParams
