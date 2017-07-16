@@ -11,7 +11,7 @@ import        Network.DigitalOcean.Types
 -----------------------------------------------------------------
 
 data Action = Action
-  { actionId            :: Int
+  { actionId            :: ActionId
   -- , _status        :: String -- TODO: Make a type
   , actionType'         :: String
   , actionStartedAt     :: UTCTime

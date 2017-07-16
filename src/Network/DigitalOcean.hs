@@ -110,3 +110,7 @@ performVolumeAction action@DetachByName {}       = performListVolumeAction actio
 getVolumeActions :: VolumeId -> DO [Action]
 getVolumeActions volumeId =
   unResponse <$> get (Proxy :: Proxy (Response [Action])) ("/volumes/" <> volumeId <> "/actions") Nothing
+
+getVolumeAction :: VolumeId -> ActionId -> DO Action
+getVolumeAction volumeId actionId =
+  unResponse <$> get (Proxy :: Proxy (Response Action)) ("/volumes/" <> volumeId <> "/actions/" <> show actionId) Nothing
