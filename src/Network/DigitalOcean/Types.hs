@@ -65,3 +65,11 @@ newtype Client = Client { apiKey :: BS.ByteString }
 type DoErr = T.Text
 
 newtype Response a = Response { unResponse :: a } deriving (Generic)
+
+class (ToJSON a) => Payload a 
+
+data EmptyPayload = EmptyPayload
+instance Payload EmptyPayload where
+instance ToJSON EmptyPayload where
+  toJSON EmptyPayload =
+    object []

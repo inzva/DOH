@@ -45,3 +45,7 @@ getVolumes =
 getVolume :: Int -> DO Volume
 getVolume id' =
   unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" ++ show id') Nothing
+
+createVolume :: VolumePayload -> DO ()
+createVolume =
+  post (Proxy :: Proxy ()) "/volumes" Nothing

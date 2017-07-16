@@ -39,3 +39,22 @@ instance FromJSON Volume where
       <*> v .: "description"
       <*> v .: "size_gigabytes"
       <*> v .: "created_at"
+
+data VolumePayload = VolumePayload
+  { volumePayloadSizeGigabytes :: Int
+  , volumePayloadName          :: String
+  , volumePayloadDescripton    :: String
+  , volumePayloadRegion        :: String
+  , volumePayloadSnapshotId    :: String
+  } deriving Show
+
+instance ToJSON VolumePayload where
+  toJSON (VolumePayload size name description region snapshotId) = 
+    object [ "size_gigabytes" .= size
+           , "name" .= name
+           , "description" .= description
+           , "region" .= region
+           , "snapshot_id" .= snapshotId
+           ]
+
+instance Payload VolumePayload where

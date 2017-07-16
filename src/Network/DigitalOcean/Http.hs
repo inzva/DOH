@@ -28,8 +28,8 @@ import           Network.DigitalOcean.Utils.Pagination
 baseURI :: String
 baseURI = "https://api.digitalocean.com/v2"
 
-makeRequest :: forall proxy a. (FromJSON a) => proxy a -> RequestMethod -> Endpoint -> Maybe QueryParams -> DO a
-makeRequest _ method uri queryParams = do
+makeRequest :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> RequestMethod -> Endpoint -> Maybe QueryParams -> Maybe p -> DO a
+makeRequest _ method uri queryParams mbPayload = do
   liftIO $ print uri
   client <- ask
   let uri' = uri <> maybe mempty show queryParams
@@ -37,20 +37,29 @@ makeRequest _ method uri queryParams = do
   manager <- liftIO newTlsManager
   initialRequest <- liftIO $ parseRequest uri'
   let request = initialRequest { method = BSC.pack $ show method
-                               , requestHeaders = [("Authorization", "Bearer " `BS.append` apiKey client)]
+                               , requestHeaders = [ ("Authorization", "Bearer " `BS.append` apiKey client)
+                                                  , ("Content-Type", "application/json")
+                                                  ]
                                }
-  response <- liftIO $ httpLbs request manager
+  let request' = maybe request (\payload -> request { requestBody = RequestBodyLBS (encode payload) }) mbPayload
+  response <- liftIO $ httpLbs request' manager
   let respStatus = statusCode $ responseStatus response
   when (respStatus < 200 || respStatus > 300) $ throwError $ "Non-success response: " <> show respStatus <> "Body:" <> show (responseBody response)
   case (eitherDecode (responseBody response) :: Either String a) of
     Left err -> throwError $ "Error occured for response body:" <> BSC.unpack (LBS.toStrict $ responseBody response) <> err
     Right resource -> return resource
 
-get' :: forall proxy a. (FromJSON a) => proxy a -> String -> Maybe QueryParams -> DO a
-get' _ = makeRequest (Proxy :: Proxy a) Get
+get' :: forall proxy a. FromJSON a => proxy a -> String -> Maybe QueryParams -> DO a
+get' _ uri queryParams = makeRequest (Proxy :: Proxy a) Get uri queryParams (Just EmptyPayload)
 
 get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> Maybe QueryParams -> DO a
 get _ endp = get' (Proxy :: Proxy a) (baseURI <> endp)
+
+post' :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> String -> Maybe QueryParams -> p -> DO a
+post' _ uri queryParams payload = makeRequest (Proxy :: Proxy a) Post uri queryParams (Just payload)
+
+post :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> Endpoint -> Maybe QueryParams -> p -> DO a
+post _ endp = post' (Proxy :: Proxy a) (baseURI <> endp)
 
 getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> String -> DO [a]
 getPaginated _ config url = 
