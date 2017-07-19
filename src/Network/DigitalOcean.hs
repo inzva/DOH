@@ -22,9 +22,6 @@ import           Network.DigitalOcean.Utils.Pagination
 import           Network.DigitalOcean.Services
 -----------------------------------------------------------------
 
-runDo' :: Client -> DO a -> IO (Either String a)
-runDo' client do' = runExceptT $ runReaderT (runDO do') client
-
 getAccounts :: DO Account
 getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) "/account" Nothing
 

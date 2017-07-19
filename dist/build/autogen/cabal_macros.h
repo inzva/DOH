@@ -84,12 +84,19 @@
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 6)
 
-/* package QuickCheck-2.9.2 */
-#define VERSION_QuickCheck "2.9.2"
+/* package QuickCheck-2.10.0.1 */
+#define VERSION_QuickCheck "2.10.0.1"
 #define MIN_VERSION_QuickCheck(major1,major2,minor) (\
   (major1) <  2 || \
-  (major1) == 2 && (major2) <  9 || \
-  (major1) == 2 && (major2) == 9 && (minor) <= 2)
+  (major1) == 2 && (major2) <  10 || \
+  (major1) == 2 && (major2) == 10 && (minor) <= 0)
+
+/* package interpolatedstring-perl6-1.0.0 */
+#define VERSION_interpolatedstring_perl6 "1.0.0"
+#define MIN_VERSION_interpolatedstring_perl6(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  0 || \
+  (major1) == 1 && (major2) == 0 && (minor) <= 0)
 
 /* tool alex-3.2.1 */
 #define TOOL_VERSION_alex "3.2.1"
