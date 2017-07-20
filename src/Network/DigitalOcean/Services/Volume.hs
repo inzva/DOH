@@ -1,12 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Network.DigitalOcean.Services.Volume where
 
 -----------------------------------------------------------------
 import        Data.Aeson
+import        Data.Aeson.Casing
 import        Data.Time.Clock
+import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Services.Region
 import        Network.DigitalOcean.Types
@@ -20,7 +23,7 @@ data Volume = Volume
   , volumeDescription :: String
   , volumeSizeGigabytes :: Double
   , volumeCreatedAt :: UTCTime
-  } deriving Show
+  } deriving (Show, Generic)
 
 instance FromJSON (Response [Volume]) where
   parseJSON (Object v) =
@@ -31,15 +34,7 @@ instance FromJSON (Response Volume) where
     fmap Response $ parseJSON =<< (v .: "volume")
 
 instance FromJSON Volume where
-  parseJSON (Object v) =
-    Volume
-      <$> v .: "id"
-      <*> v .: "region"
-      <*> v .: "droplet_ids"
-      <*> v .: "name"
-      <*> v .: "description"
-      <*> v .: "size_gigabytes"
-      <*> v .: "created_at"
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 data VolumePayload = VolumePayload
   { volumePayloadSizeGigabytes :: Int
@@ -47,16 +42,10 @@ data VolumePayload = VolumePayload
   , volumePayloadDescripton    :: String
   , volumePayloadRegion        :: String
   , volumePayloadSnapshotId    :: String
-  } deriving Show
+  } deriving (Show, Generic)
 
 instance ToJSON VolumePayload where
-  toJSON (VolumePayload size name description region snapshotId) = 
-    object [ "size_gigabytes" .= size
-           , "name" .= name
-           , "description" .= description
-           , "region" .= region
-           , "snapshot_id" .= snapshotId
-           ]
+  toJSON = genericToJSON $ aesonPrefix snakeCase
 
 instance Payload VolumePayload where
 

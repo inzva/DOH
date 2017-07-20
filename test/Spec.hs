@@ -2,50 +2,63 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE ExtendedDefaultRules #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Main where
 
 import Control.Monad.Reader
 import Control.Monad.Except
 import Network.DigitalOcean
-import Network.DigitalOcean.Types hiding (Response)
+import Network.DigitalOcean.Types
 import Network.DigitalOcean.Services
 import Test.QuickCheck
 import Test.QuickCheck.Monadic
+import Test.QuickCheck.Instances
+import Test.QuickCheck.Property
 import qualified Data.ByteString.Lazy as LBS
+import qualified Data.ByteString.Lazy.Char8 as LBSC
 import Data.Aeson
+import Data.Aeson.Casing
 -- import Text.RawString.QQ
-import Text.InterpolatedString.Perl6 (q)
+import Text.InterpolatedString.Perl6 (qc)
+import Data.Maybe
+import Data.String
+import GHC.Generics
+import Data.Proxy
 
-client = Client "wow"
+-----------------------------------------------------------------
 
-data Response = Response LBS.ByteString
+prop_Response :: forall proxy service. (FromJSON service) => proxy service -> LBS.ByteString -> Property
+prop_Response _ resp =
+  let result = eitherDecode resp :: Either String service in
+  case result of
+    Left err -> error err
+    Right acc -> label "wow" True
 
-accStr :: LBS.ByteString
-accStr = [q|
-{
-	"droplet_limit": 25,
-	"floating_ip_limit": 5,
-	"email": "sammy@digitalocean.com",
-	"uuid": "b6fr89dbf6d9156cace5f3c78dc9851d957381ef",
-	"email_verified": true,
-	"status": "active",
-	"status_message": ""
-}|]
+-----------------------------------------------------------------
 
-wowResp :: Response
-wowResp = Response accStr
+instance Arbitrary Account where
+  arbitrary =
+    Account
+      <$> choose (1, 100)
+      <*> choose (1, 10)
+      <*> arbitrary
+      <*> arbitrary
+      <*> arbitrary
+      <*> oneof (return <$> ["active", "warning", "locked"])
+      <*> arbitrary
 
-getAccounts' :: (Response -> IO Account) -> IO Account
-getAccounts' f = f wowResp
+instance ToJSON Account where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
 
--- mockedAccounts :: Identity [Account]
-prop_Wow = monadicIO $ do
-  account <- run $ getAccounts' $ \(Response resp) ->
-    case eitherDecode resp of
-      Left err -> error err
-      Right acc -> return acc
-  assert True
+prop_Account :: Account -> Property
+prop_Account account = prop_Response (Proxy :: Proxy Account) (encode account)
 
-main = return ()  
+-----------------------------------------------------------------
+
+main :: IO ()
+main = return ()
+
+-- To run tests: `quickCheck . withMaxSuccess 1000 $ prop_Account .&&. prop_Account' .&&. prop_Account`

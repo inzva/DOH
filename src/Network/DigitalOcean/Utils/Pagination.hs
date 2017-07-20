@@ -1,4 +1,5 @@
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
@@ -7,6 +8,7 @@ module Network.DigitalOcean.Utils.Pagination where
 
 -----------------------------------------------------------------
 import         Data.Aeson
+import         Data.Aeson.Types
 -----------------------------------------------------------------
 import         Network.DigitalOcean.Types
 -----------------------------------------------------------------
@@ -31,3 +33,13 @@ paginateUntil config@PaginationConfig {..} state@PaginationState {..} f =
     else do
       newState <- paginate f state 
       paginateUntil config newState f
+
+parsePagination :: Object -> Parser (Maybe String, Int)
+parsePagination v = do
+  links <- v .: "links"
+  pages <- links .: "pages"
+  (,)
+    <$> (pages .:? "next")
+    <*> (v .: "meta" >>= (.: "total"))
+
+

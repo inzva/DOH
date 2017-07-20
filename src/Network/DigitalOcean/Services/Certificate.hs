@@ -1,13 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module Network.DigitalOcean.Services.Action where
 
 -----------------------------------------------------------------
 import        Data.Aeson
+-- import        Data.Aeson.Types
+-- import        Data.Aeson.Casing
 import        Data.Time.Clock
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
+import        Network.DigitalOcean.Utils.Pagination
 -----------------------------------------------------------------
 
 data Certificate = Certificate
@@ -16,7 +20,7 @@ data Certificate = Certificate
   , certificateNotAfter         :: String
   , certificateSha1Fingerprint  :: String
   , certificateCreatedAt        :: UTCTime
-  } deriving (Show)
+  } deriving (Show, Generic)
 
 instance FromJSON (Response Certificate) where
   parseJSON (Object v) =
@@ -27,26 +31,12 @@ instance FromJSON (Response [Certificate]) where
     fmap Response $ parseJSON =<< (v .: "certificates")
 
 instance FromJSON Certificate where
-  parseJSON (Object v) =
-    Certificate
-      <$> v .: "id"
-      <*> v .: "name"
-      <*> v .: "not_after"
-      <*> v .: "sha1_fingerprint"
-      <*> v .: "created_at"
-
-parsePagination :: Object -> Parser (Int, Maybe String, Int)
-parsePagination v = do
-  links <- v .: "links"
-  pages <- links .: "pages"
-  (pages,,)
-    <$> (pages .:? "next")
-    <*> (v .: "meta" >>= (.: "total"))
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance FromJSON (PaginationState Certificate) where
   parseJSON (Object v) = do
     certificates <- v .: "actions"
-    (pages, next, total) <- parsePagination
+    (next, total) <- parsePagination
     let page = 1
     return $ PaginationState actions page next total False
 

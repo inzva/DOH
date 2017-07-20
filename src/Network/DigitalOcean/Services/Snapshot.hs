@@ -1,11 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Network.DigitalOcean.Services.Snapshot where
 
 -----------------------------------------------------------------
 import        Data.Aeson
+import        Data.Aeson.Casing
 import        Data.Time.Clock
+import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
 -----------------------------------------------------------------
@@ -19,7 +22,7 @@ data Snapshot = Snapshot
   , snapshotResourceType   :: String
   , snapshotMinDiskSize    :: Double
   , snapshotSizeGigabytes  :: Double
-  } deriving (Show)
+  } deriving (Show, Generic)
 
 instance FromJSON (Response [Snapshot]) where
   parseJSON (Object v) =
@@ -30,16 +33,7 @@ instance FromJSON (Response Snapshot) where
     fmap Response $ parseJSON =<< (v .: "snapshot")
 
 instance FromJSON Snapshot where
-  parseJSON (Object v) =
-    Snapshot
-      <$> v .: "id"
-      <*> v .: "name"
-      <*> v .: "created_at"
-      <*> v .: "regions"
-      <*> v .: "resource_id"
-      <*> v .: "resource_type"
-      <*> v .: "min_disk_size"
-      <*> v .: "size_gigabytes"
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 newtype SnapshotPayload = SnapshotPayload
   { name :: String }

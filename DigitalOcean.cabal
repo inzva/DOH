@@ -28,6 +28,7 @@ library
                        bytestring,
                        uri,
                        aeson,
+                       aeson-casing,
                        time,
                        lens
   hs-source-dirs:      src
@@ -47,7 +48,9 @@ test-suite do-test
                   uri,
                   aeson,
                   time,
+                  aeson-casing,
                   lens,
                   QuickCheck,
+                  quickcheck-instances,
                   interpolatedstring-perl6
   hs-source-dirs: src, test

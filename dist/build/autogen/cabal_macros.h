@@ -14,6 +14,13 @@
   (major1) == 1 && (major2) <  2 || \
   (major1) == 1 && (major2) == 2 && (minor) <= 1)
 
+/* package aeson-casing-0.1.0.5 */
+#define VERSION_aeson_casing "0.1.0.5"
+#define MIN_VERSION_aeson_casing(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  1 || \
+  (major1) == 0 && (major2) == 1 && (minor) <= 0)
+
 /* package base-4.9.1.0 */
 #define VERSION_base "4.9.1.0"
 #define MIN_VERSION_base(major1,major2,minor) (\
@@ -98,6 +105,13 @@
   (major1) == 1 && (major2) <  0 || \
   (major1) == 1 && (major2) == 0 && (minor) <= 0)
 
+/* package quickcheck-instances-0.3.16 */
+#define VERSION_quickcheck_instances "0.3.16"
+#define MIN_VERSION_quickcheck_instances(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  3 || \
+  (major1) == 0 && (major2) == 3 && (minor) <= 16)
+
 /* tool alex-3.2.1 */
 #define TOOL_VERSION_alex "3.2.1"
 #define MIN_TOOL_VERSION_alex(major1,major2,minor) (\
@@ -175,7 +189,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-JGmSXIGQOuXAefA6Hpe6Si"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-HSi8gUrZ4y4LYXh4UXVNtH"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-JGmSXIGQOuXAefA6Hpe6Si"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-HSi8gUrZ4y4LYXh4UXVNtH"
 

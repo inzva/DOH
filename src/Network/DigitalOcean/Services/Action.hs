@@ -1,13 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Network.DigitalOcean.Services.Action where
 
 -----------------------------------------------------------------
 import        Data.Aeson
+import        Data.Aeson.Casing
 import        Data.Time.Clock
+import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
+import        Network.DigitalOcean.Utils.Pagination
 -----------------------------------------------------------------
 
 data Action = Action
@@ -19,7 +23,7 @@ data Action = Action
   , actionResourceId    :: Int
   , actionResourceType  :: String -- TODO: Make a type
   , actionRegionSlug    :: Maybe String
-  } deriving (Show)
+  } deriving (Show, Generic)
 
 instance FromJSON (Response Action) where
   parseJSON (Object v) =
@@ -30,25 +34,12 @@ instance FromJSON (Response [Action]) where
     fmap Response $ parseJSON =<< (v .: "actions")
 
 instance FromJSON Action where
-  parseJSON (Object v) =
-    Action
-      <$> v .: "id"
-      -- <*> v .: "status"
-      <*> v .: "type"
-      <*> v .: "started_at"
-      <*> v .: "completed_at"
-      <*> v .: "resource_id"
-      <*> v .: "resource_type"
-      <*> v .:? "region_slug"
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance FromJSON (PaginationState Action) where
   parseJSON (Object v) = do
     actions <- v .: "actions"
-    links <- v .: "links"
-    -- meta <- v .: "meta"
-    pages <- links .: "pages"
-    next <- pages .:? "next"
-    total <- v .: "meta" >>= (.: "total")
+    (next, total) <- parsePagination v
     let page = 1
     return $ PaginationState actions page next total False
 

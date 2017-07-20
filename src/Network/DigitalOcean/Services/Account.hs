@@ -6,6 +6,7 @@ module Network.DigitalOcean.Services.Account where
 
 -----------------------------------------------------------------
 import        Data.Aeson
+import        Data.Aeson.Casing
 import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
@@ -26,12 +27,4 @@ instance FromJSON (Response Account) where
     fmap Response $ parseJSON =<< (v .: "account")
 
 instance FromJSON Account where
-  parseJSON (Object v) =
-    Account
-      <$> v .: "droplet_limit"
-      <*> v .: "floating_ip_limit"
-      <*> v .: "email"
-      <*> v .: "uuid"
-      <*> v .: "email_verified"
-      <*> v .: "status"
-      <*> v .: "status_message"
+  parseJSON = genericParseJSON $ aesonPrefix snakeCase
