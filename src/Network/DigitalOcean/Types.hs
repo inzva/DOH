@@ -66,7 +66,7 @@ newtype Client = Client { apiKey :: BS.ByteString }
 
 type DoErr = T.Text
 
-newtype Response a = Response { unResponse :: a } deriving (Generic)
+newtype Response a = Response { unResponse :: a } deriving (Generic, Show)
 
 class (ToJSON a) => Payload a 
 

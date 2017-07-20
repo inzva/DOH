@@ -2,16 +2,17 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Network.DigitalOcean.Services.Action where
+module Network.DigitalOcean.Services.Certificate where
 
 -----------------------------------------------------------------
 import        Data.Aeson
--- import        Data.Aeson.Types
--- import        Data.Aeson.Casing
+import        Data.Aeson.Casing
 import        Data.Time.Clock
+import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
 import        Network.DigitalOcean.Utils.Pagination
+import        Network.DigitalOcean.Services.Action
 -----------------------------------------------------------------
 
 data Certificate = Certificate
@@ -36,11 +37,8 @@ instance FromJSON Certificate where
 instance FromJSON (PaginationState Certificate) where
   parseJSON (Object v) = do
     certificates <- v .: "actions"
-    (next, total) <- parsePagination
+    (next, total) <- parsePagination v
     let page = 1
-    return $ PaginationState actions page next total False
+    return $ PaginationState certificates page next total False
 
-instance Paginatable Action where
-
-type ActionId = Int
-
+instance Paginatable Certificate where

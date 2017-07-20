@@ -16,7 +16,7 @@ import        Network.DigitalOcean.Utils.Pagination
 
 data Action = Action
   { actionId            :: ActionId
-  -- , _status        :: String -- TODO: Make a type
+  , _status             :: String -- TODO: Make a type
   , actionType'         :: String
   , actionStartedAt     :: UTCTime
   , actionCompletedAt   :: UTCTime
