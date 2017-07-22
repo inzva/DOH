@@ -16,7 +16,7 @@ import        Network.DigitalOcean.Services.Action
 -----------------------------------------------------------------
 
 data Certificate = Certificate
-  { certificateId               :: ActionId
+  { certificateId               :: CertificateId
   , certificateName             :: String
   , certificateNotAfter         :: String
   , certificateSha1Fingerprint  :: String
@@ -42,3 +42,15 @@ instance FromJSON (PaginationState Certificate) where
     return $ PaginationState certificates page next total False
 
 instance Paginatable Certificate where
+
+data Certificatepayload = Certificatepayload
+  { certificatepayloadName :: String
+  , certificatepayloadPrivateKey :: String
+  , certificatepayloadLeafCertificate :: String
+  , certificatepayloadCertificateChain :: Maybe String
+  } deriving (Show, Generic)
+
+instance ToJSON Certificatepayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+instance Payload Certificatepayload

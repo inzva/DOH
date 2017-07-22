@@ -23,35 +23,35 @@ import           Network.DigitalOcean.Services
 -----------------------------------------------------------------
 
 getAccounts :: DO Account
-getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) "/account" Nothing
+getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) AccountEndpoint Nothing
 
 getActions :: Maybe PaginationConfig -> DO [Action]
-getActions config = getPaginated (Proxy :: Proxy Action) config "/actions"
+getActions config = getPaginated (Proxy :: Proxy Action) config ActionsEndpoint
 
-getAction :: Int -> DO Action
+getAction :: ActionId -> DO Action
 getAction id' =
-  unResponse <$> get (Proxy :: Proxy (Response Action)) ("/actions/" ++ show id') Nothing
+  unResponse <$> get (Proxy :: Proxy (Response Action)) (ActionEndpoint id') Nothing
 
 getRegions :: DO [Region]
 getRegions =
-  unResponse <$> get (Proxy :: Proxy (Response [Region])) "/regions" Nothing
+  unResponse <$> get (Proxy :: Proxy (Response [Region])) RegionsEndpoint Nothing
 
 getVolumes :: DO [Volume]
 getVolumes =
-  unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" Nothing
+  unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint Nothing
 
-getVolume :: Int -> DO Volume
+getVolume :: VolumeId -> DO Volume
 getVolume id' =
-  unResponse <$> get (Proxy :: Proxy (Response Volume)) ("/volumes" <> show id') Nothing
+  unResponse <$> get (Proxy :: Proxy (Response Volume)) (VolumeEndpoint id') Nothing
 
 createVolume :: VolumePayload -> DO Volume
 createVolume =
-  fmap unResponse . post (Proxy :: Proxy (Response Volume)) "/volumes" Nothing
+  fmap unResponse . post (Proxy :: Proxy (Response Volume)) VolumesEndpoint Nothing
 
 getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
   let queryParams = Just $ QueryParams [("region", region), ("name", name)] in
-  unResponse <$> get (Proxy :: Proxy (Response [Volume])) "/volumes" queryParams
+  unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint queryParams
 
 data ResourceType = VolumeResource
                   | DropletResource
@@ -63,39 +63,39 @@ instance Show ResourceType where
 getSnapshots :: Maybe ResourceType -> DO [Snapshot]
 getSnapshots resourceType = do
   let queryParams = maybe Nothing (\res -> Just $ QueryParams [("resource_type", show res)]) resourceType
-  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) "/snapshots" queryParams
+  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) SnapshotsEndpoint queryParams
 
 getSnapshot :: SnapshotId -> DO Snapshot
 getSnapshot id' =
-  unResponse <$> get (Proxy :: Proxy (Response Snapshot)) ("/snapshots/" <> show id') Nothing
+  unResponse <$> get (Proxy :: Proxy (Response Snapshot)) (SnapshotEndpoint id') Nothing
 
 deleteSnapshot :: SnapshotId -> DO ()
 deleteSnapshot id' =
-  delete ("/snapshots/" <> show id') Nothing
+  delete (SnapshotEndpoint id') Nothing
 
 getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
 getSnapshotsOfVolume volumeId =
-  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
+  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) (VolumeSnapshotsEndpoint volumeId) Nothing
 
 createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
 createSnapshotOfVolume volumeId =
-  fmap unResponse . post (Proxy :: Proxy (Response Snapshot)) ("/volumes/" ++ volumeId ++ "/snapshots") Nothing
+  fmap unResponse . post (Proxy :: Proxy (Response Snapshot)) (VolumeSnapshotsEndpoint volumeId) Nothing
 
 deleteVolume :: VolumeId -> DO ()
 deleteVolume id' =
-  delete ("/volumes/" <> show id') Nothing
+  delete (VolumeEndpoint id') Nothing
 
 deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
-  delete "/volumes" . Just $ QueryParams [("region", region), ("name", name)]
+  delete VolumesEndpoint . Just $ QueryParams [("region", region), ("name", name)]
 
 performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
 performSingleVolumeAction volumeId action =
-  unResponse <$> post (Proxy :: Proxy (Response Action)) ("/volumes/" <> show volumeId <> "/actions") Nothing action
+  unResponse <$> post (Proxy :: Proxy (Response Action)) (VolumeActionsEndpoint volumeId) Nothing action
 
 performListVolumeAction :: VolumeAction -> DO Action
 performListVolumeAction action =
-  unResponse <$> post (Proxy :: Proxy (Response Action)) "/volumes/actions" Nothing action
+  unResponse <$> post (Proxy :: Proxy (Response Action)) VolumesActionsEndpoint Nothing action
 
 performVolumeAction :: VolumeAction -> DO Action
 performVolumeAction action@(Attach volumeId _ _) = performSingleVolumeAction volumeId action
@@ -106,8 +106,15 @@ performVolumeAction action@DetachByName {}       = performListVolumeAction actio
 
 getVolumeActions :: VolumeId -> DO [Action]
 getVolumeActions volumeId =
-  unResponse <$> get (Proxy :: Proxy (Response [Action])) ("/volumes/" <> volumeId <> "/actions") Nothing
+  unResponse <$> get (Proxy :: Proxy (Response [Action])) (VolumeActionsEndpoint volumeId) Nothing
 
 getVolumeAction :: VolumeId -> ActionId -> DO Action
 getVolumeAction volumeId actionId =
-  unResponse <$> get (Proxy :: Proxy (Response Action)) ("/volumes/" <> volumeId <> "/actions/" <> show actionId) Nothing
+  unResponse <$> get (Proxy :: Proxy (Response Action)) (VolumeActionEndpoint volumeId actionId) Nothing
+
+createCertificate :: Certificatepayload -> DO Certificate
+createCertificate = fmap unResponse . post (Proxy :: Proxy (Response Certificate)) CertificatesEndpoint Nothing
+
+getCertificate :: CertificateId -> DO Certificate
+getCertificate id' =
+  unResponse <$> get (Proxy :: Proxy (Response Certificate)) (CertificateEndpoint id') Nothing

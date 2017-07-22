@@ -98,6 +98,13 @@
   (major1) == 2 && (major2) <  10 || \
   (major1) == 2 && (major2) == 10 && (minor) <= 0)
 
+/* package filepath-1.4.1.1 */
+#define VERSION_filepath "1.4.1.1"
+#define MIN_VERSION_filepath(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  4 || \
+  (major1) == 1 && (major2) == 4 && (minor) <= 1)
+
 /* package interpolatedstring-perl6-1.0.0 */
 #define VERSION_interpolatedstring_perl6 "1.0.0"
 #define MIN_VERSION_interpolatedstring_perl6(major1,major2,minor) (\

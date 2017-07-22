@@ -19,14 +19,13 @@ import           Control.Monad.Reader
 import           Control.Monad.Except
 import qualified Data.Text                 as T
 import qualified Data.ByteString           as BS
+import           System.FilePath.Posix     ((</>))
 -----------------------------------------------------------------
 import           Data.Monoid
 import           Data.List
 -----------------------------------------------------------------
 
 newtype QueryParams = QueryParams [(String, String)]
-
-type Endpoint = String
 
 data RequestMethod =
     Get
@@ -74,3 +73,41 @@ data EmptyPayload = EmptyPayload
 instance Payload EmptyPayload where
 instance ToJSON EmptyPayload where
   toJSON EmptyPayload = object []
+
+data Endpoint =
+    AccountEndpoint
+  | ActionsEndpoint
+  | ActionEndpoint ActionId
+  | RegionsEndpoint
+  | VolumesEndpoint
+  | VolumeEndpoint VolumeId
+  | SnapshotsEndpoint
+  | SnapshotEndpoint SnapshotId
+  | VolumeSnapshotsEndpoint VolumeId
+  | VolumesActionsEndpoint
+  | VolumeActionEndpoint VolumeId ActionId
+  | VolumeActionsEndpoint VolumeId
+  | CertificateEndpoint CertificateId
+  | CertificatesEndpoint
+
+instance Show Endpoint where
+  show AccountEndpoint                 = "/account"
+  show ActionsEndpoint                 = "/actions"
+  show RegionsEndpoint                 = "/regions"
+  show VolumesEndpoint                 = "/volumes"
+  show SnapshotsEndpoint               = "/snapshots"
+  show CertificatesEndpoint            = "/certificates"
+  show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
+  show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
+  show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'
+  show (VolumeSnapshotsEndpoint id')   = show VolumesEndpoint </> id' </> show SnapshotsEndpoint
+  show VolumesActionsEndpoint          = show VolumesEndpoint </> show SnapshotsEndpoint
+  show (VolumeActionsEndpoint vId)     = show VolumesEndpoint </> vId </> show ActionsEndpoint
+  show (VolumeActionEndpoint vId aId)  = show VolumesEndpoint </> vId </> show ActionsEndpoint </> show aId
+  show CertificatesEndpoint            = show CertificatesEndpoint
+  show (CertificateEndpoint id')       = show CertificatesEndpoint </> id'
+
+type VolumeId   = String
+type ActionId = Int
+type CertificateId = String
+type SnapshotId = String

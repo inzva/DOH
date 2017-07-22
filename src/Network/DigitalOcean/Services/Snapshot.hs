@@ -43,5 +43,3 @@ instance ToJSON SnapshotPayload where
     object [ "name" .= name ]
 
 instance Payload SnapshotPayload where
-
-type SnapshotId = String

@@ -44,5 +44,3 @@ instance FromJSON (PaginationState Action) where
     return $ PaginationState actions page next total False
 
 instance Paginatable Action where
-
-type ActionId = Int

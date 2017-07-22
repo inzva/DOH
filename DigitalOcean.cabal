@@ -52,5 +52,6 @@ test-suite do-test
                   lens,
                   QuickCheck,
                   quickcheck-instances,
-                  interpolatedstring-perl6
+                  interpolatedstring-perl6,
+                  filepath
   hs-source-dirs: src, test

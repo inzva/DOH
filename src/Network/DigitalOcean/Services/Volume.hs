@@ -47,9 +47,8 @@ data VolumePayload = VolumePayload
 instance ToJSON VolumePayload where
   toJSON = genericToJSON $ aesonPrefix snakeCase
 
-instance Payload VolumePayload where
+instance Payload VolumePayload
 
-type VolumeId   = String
 type DropletId  = Int
 type RegionSlug = String
 type VolumeName = String

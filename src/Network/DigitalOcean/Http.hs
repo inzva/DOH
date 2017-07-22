@@ -30,9 +30,10 @@ import           Network.DigitalOcean.Utils.Pagination
 baseURI :: String
 baseURI = "https://api.digitalocean.com/v2"
 
-makeRequest :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> RequestMethod -> Endpoint -> Maybe QueryParams -> Maybe p -> DO a
+makeRequest :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> RequestMethod -> String -> Maybe QueryParams -> Maybe p -> DO a
 makeRequest _ method uri queryParams mbPayload = do
   liftIO $ print uri
+  liftIO $ print . encode $ mbPayload
   client <- ask
   let uri' = uri <> maybe mempty show queryParams
   when (isNothing $ parseURI uri') $ throwError $ "URI cannot be parsed: " <> uri'
@@ -56,26 +57,26 @@ get' :: forall proxy a. FromJSON a => proxy a -> String -> Maybe QueryParams -> 
 get' _ uri queryParams = makeRequest (Proxy :: Proxy a) Get uri queryParams (Just EmptyPayload)
 
 get :: forall proxy a. (FromJSON a) => proxy a -> Endpoint -> Maybe QueryParams -> DO a
-get _ endp = get' (Proxy :: Proxy a) (baseURI <> endp)
+get _ endp = get' (Proxy :: Proxy a) (baseURI <> show endp)
 
 post' :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> String -> Maybe QueryParams -> p -> DO a
 post' _ uri queryParams payload = makeRequest (Proxy :: Proxy a) Post uri queryParams (Just payload)
 
 post :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> Endpoint -> Maybe QueryParams -> p -> DO a
-post _ endp = post' (Proxy :: Proxy a) (baseURI <> endp)
+post _ endp = post' (Proxy :: Proxy a) (baseURI <> show endp)
 
 delete' :: String -> Maybe QueryParams -> DO ()
 delete' uri queryParams = makeRequest (Proxy :: Proxy ()) Delete uri queryParams (Just EmptyPayload)
 
 delete :: Endpoint -> Maybe QueryParams -> DO ()
-delete endp = delete' (baseURI <> endp)
+delete endp = delete' (baseURI <> show endp)
 
-getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> String -> DO [a]
-getPaginated _ config url = 
+getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> Endpoint -> DO [a]
+getPaginated _ config endp = 
   case config of
     Just config -> do
       let queryParams = paginationQueryParams config
-      pagination <- get (Proxy :: Proxy (PaginationState a)) url (Just queryParams)
+      pagination <- get (Proxy :: Proxy (PaginationState a)) endp (Just queryParams)
       curr <$> paginateUntil config pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) url Nothing)
     Nothing ->
-      curr <$> get (Proxy :: Proxy (PaginationState a)) url Nothing
+      curr <$> get (Proxy :: Proxy (PaginationState a)) endp Nothing

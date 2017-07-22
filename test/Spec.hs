@@ -95,7 +95,7 @@ prop_Action v v' v'' = prop_Response (Proxy :: Proxy Action) (encode v)
 instance Arbitrary Certificate where
   arbitrary =
     Certificate
-      <$> choose (1, 100000000)
+      <$> arbitrary
       <*> arbitrary
       <*> arbitrary
       <*> arbitrary
@@ -214,18 +214,6 @@ prop_Volume v v' v'' = prop_Response (Proxy :: Proxy Volume) (encode v)
                   .&&. prop_Response (Proxy :: Proxy (Response Volume)) (encode v')
                   .&&. prop_Response (Proxy :: Proxy (Response [Volume])) (encode v'')
 
------------------------------------------------------------------
-
--- instance Arbitrary VolumeAction where
---   arbitrary = oneof
---     [ Attach <$> arbitrary <*> arbitrary <*> arbitrary
---     , Detach <$> arbitrary <*> arbitrary <*> arbitrary
---     , Resize <$> arbitrary <*> arbitrary <*> arbitrary
---     , AttachByName <$> arbitrary <*> arbitrary <*> arbitrary
---     , DetachByName <$> arbitrary <*> arbitrary <*> arbitrary
---     ]
-
--- prop_VolumeAction = prop_Response (Proxy :: Proxy VolumeAction) -- this should be fetch
 -----------------------------------------------------------------
 
 runTests = quickCheck . withMaxSuccess 100 $ prop_Account
