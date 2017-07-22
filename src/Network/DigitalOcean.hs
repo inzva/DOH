@@ -118,3 +118,10 @@ createCertificate = fmap unResponse . post (Proxy :: Proxy (Response Certificate
 getCertificate :: CertificateId -> DO Certificate
 getCertificate id' =
   unResponse <$> get (Proxy :: Proxy (Response Certificate)) (CertificateEndpoint id') Nothing
+
+getCertificates :: Maybe PaginationConfig -> DO [Certificate]
+getCertificates config = getPaginated (Proxy :: Proxy Certificate) config CertificatesEndpoint
+
+deleteCertificate :: CertificateId -> DO ()
+deleteCertificate id' =
+  delete (CertificateEndpoint id') Nothing
