@@ -5,6 +5,7 @@ module Network.DigitalOcean.Services (
   , module Network.DigitalOcean.Services.Volume
   , module Network.DigitalOcean.Services.Snapshot
   , module Network.DigitalOcean.Services.Certificate
+  , module Network.DigitalOcean.Services.Domain
 ) where
   
 import Network.DigitalOcean.Services.Region
@@ -13,3 +14,4 @@ import Network.DigitalOcean.Services.Account
 import Network.DigitalOcean.Services.Volume
 import Network.DigitalOcean.Services.Snapshot
 import Network.DigitalOcean.Services.Certificate
+import Network.DigitalOcean.Services.Domain

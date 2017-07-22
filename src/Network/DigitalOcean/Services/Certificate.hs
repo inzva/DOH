@@ -35,11 +35,7 @@ instance FromJSON Certificate where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance FromJSON (PaginationState Certificate) where
-  parseJSON (Object v) = do
-    certificates <- v .: "actions"
-    (next, total) <- parsePagination v
-    let page = 1
-    return $ PaginationState certificates page next total False
+  parseJSON (Object v) = parsePaginationState v "certificates"
 
 instance Paginatable Certificate where
 

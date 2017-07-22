@@ -123,5 +123,18 @@ getCertificates :: Maybe PaginationConfig -> DO [Certificate]
 getCertificates config = getPaginated (Proxy :: Proxy Certificate) config CertificatesEndpoint
 
 deleteCertificate :: CertificateId -> DO ()
-deleteCertificate id' =
-  delete (CertificateEndpoint id') Nothing
+deleteCertificate id' = delete (CertificateEndpoint id') Nothing
+
+getDomains :: DO [Domain]
+getDomains =
+  unResponse <$> get (Proxy :: Proxy (Response [Domain])) DomainsEndpoint Nothing
+
+getDomain :: DomainName -> DO Domain
+getDomain name' =
+  unResponse <$> get (Proxy :: Proxy (Response Domain)) (DomainEndpoint name') Nothing
+
+createDomain :: Domainpayload -> DO Domain
+createDomain = fmap unResponse . post (Proxy :: Proxy (Response Domain)) DomainsEndpoint Nothing
+
+deleteDomain :: DomainName -> DO ()
+deleteDomain name' = delete (DomainEndpoint name') Nothing

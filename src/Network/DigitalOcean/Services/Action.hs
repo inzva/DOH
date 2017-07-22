@@ -37,10 +37,6 @@ instance FromJSON Action where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 instance FromJSON (PaginationState Action) where
-  parseJSON (Object v) = do
-    actions <- v .: "actions"
-    (next, total) <- parsePagination v
-    let page = 1
-    return $ PaginationState actions page next total False
+  parseJSON (Object v) = parsePaginationState v "actions"
 
 instance Paginatable Action where

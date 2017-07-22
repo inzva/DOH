@@ -89,6 +89,8 @@ data Endpoint =
   | VolumeActionsEndpoint VolumeId
   | CertificateEndpoint CertificateId
   | CertificatesEndpoint
+  | DomainsEndpoint
+  | DomainEndpoint DomainName
 
 instance Show Endpoint where
   show AccountEndpoint                 = "/account"
@@ -97,6 +99,7 @@ instance Show Endpoint where
   show VolumesEndpoint                 = "/volumes"
   show SnapshotsEndpoint               = "/snapshots"
   show CertificatesEndpoint            = "/certificates"
+  show DomainsEndpoint                 = "/domains"
   show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
   show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
   show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'
@@ -106,8 +109,10 @@ instance Show Endpoint where
   show (VolumeActionEndpoint vId aId)  = show VolumesEndpoint </> vId </> show ActionsEndpoint </> show aId
   show CertificatesEndpoint            = show CertificatesEndpoint
   show (CertificateEndpoint id')       = show CertificatesEndpoint </> id'
+  show (DomainEndpoint name')          = show DomainsEndpoint </> name'
 
-type VolumeId   = String
-type ActionId = Int
+type VolumeId      = String
+type ActionId      = Int
 type CertificateId = String
-type SnapshotId = String
+type SnapshotId    = String
+type DomainName    = String
