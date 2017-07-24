@@ -91,6 +91,8 @@ data Endpoint =
   | CertificatesEndpoint
   | DomainsEndpoint
   | DomainEndpoint DomainName
+  | DomainRecordsEndpoint DomainName
+  | DomainRecordEndpoint DomainName DomainRecordId
 
 instance Show Endpoint where
   show AccountEndpoint                 = "/account"
@@ -103,16 +105,18 @@ instance Show Endpoint where
   show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
   show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
   show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'
-  show (VolumeSnapshotsEndpoint id')   = show VolumesEndpoint </> id' </> show SnapshotsEndpoint
-  show VolumesActionsEndpoint          = show VolumesEndpoint </> show SnapshotsEndpoint
-  show (VolumeActionsEndpoint vId)     = show VolumesEndpoint </> vId </> show ActionsEndpoint
-  show (VolumeActionEndpoint vId aId)  = show VolumesEndpoint </> vId </> show ActionsEndpoint </> show aId
-  show CertificatesEndpoint            = show CertificatesEndpoint
+  show (VolumeSnapshotsEndpoint id')   = show VolumesEndpoint </> id' <> show SnapshotsEndpoint
+  show VolumesActionsEndpoint          = show VolumesEndpoint <> show SnapshotsEndpoint
+  show (VolumeActionsEndpoint vId)     = show VolumesEndpoint </> vId <> show ActionsEndpoint
+  show (VolumeActionEndpoint vId aId)  = show VolumesEndpoint </> vId <> show ActionsEndpoint </> show aId
   show (CertificateEndpoint id')       = show CertificatesEndpoint </> id'
   show (DomainEndpoint name')          = show DomainsEndpoint </> name'
+  show (DomainRecordsEndpoint name')   = show (DomainEndpoint name') <> "/records"
+  show (DomainRecordEndpoint d' dr')   = show (DomainEndpoint d') <> "/records" </> show dr'
 
-type VolumeId      = String
-type ActionId      = Int
-type CertificateId = String
-type SnapshotId    = String
-type DomainName    = String
+type VolumeId       = String
+type ActionId       = Int
+type CertificateId  = String
+type SnapshotId     = String
+type DomainName     = String
+type DomainRecordId = Int

@@ -138,3 +138,23 @@ createDomain = fmap unResponse . post (Proxy :: Proxy (Response Domain)) Domains
 
 deleteDomain :: DomainName -> DO ()
 deleteDomain name' = delete (DomainEndpoint name') Nothing
+
+getDomainRecords :: DomainName -> DO [DomainRecord]
+getDomainRecords domainName' =
+  unResponse <$> get (Proxy :: Proxy (Response [DomainRecord])) (DomainRecordsEndpoint domainName') Nothing
+
+createDomainRecord :: DomainName -> DomainRecordPayload -> DO DomainRecord
+createDomainRecord domainName' =
+  fmap unResponse . post (Proxy :: Proxy (Response DomainRecord)) (DomainRecordsEndpoint domainName') Nothing
+
+getDomainRecord :: DomainName -> DomainRecordId -> DO DomainRecord
+getDomainRecord dn' drid' =
+  unResponse <$> get (Proxy :: Proxy (Response DomainRecord)) (DomainRecordEndpoint dn' drid') Nothing
+
+updateDomainRecord :: DomainName -> DomainRecordId -> DomainRecordPayload -> DO DomainRecord
+updateDomainRecord dn' drid' =
+  fmap unResponse . put (Proxy :: Proxy (Response DomainRecord)) (DomainRecordEndpoint dn' drid') Nothing
+
+deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
+deleteDomainRecord dn' drid' =
+  delete (DomainRecordEndpoint dn' drid') Nothing

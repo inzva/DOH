@@ -71,6 +71,12 @@ delete' uri queryParams = makeRequest (Proxy :: Proxy ()) Delete uri queryParams
 delete :: Endpoint -> Maybe QueryParams -> DO ()
 delete endp = delete' (baseURI <> show endp)
 
+put' :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> String -> Maybe QueryParams -> p -> DO a
+put' _ uri queryParams payload = makeRequest (Proxy :: Proxy a) Put (baseURI <> uri) queryParams (Just payload)
+
+put :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> Endpoint -> Maybe QueryParams -> p -> DO a
+put _ endp = put' (Proxy :: Proxy a) (baseURI <> show endp)
+
 getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> Endpoint -> DO [a]
 getPaginated _ config endp = 
   case config of

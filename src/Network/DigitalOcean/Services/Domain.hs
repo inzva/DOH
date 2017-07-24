@@ -35,7 +35,7 @@ instance FromJSON Domain where
 instance FromJSON (PaginationState Domain) where
   parseJSON (Object v) = parsePaginationState v "domains"
 
-instance Paginatable Domain where
+instance Paginatable Domain
 
 data Domainpayload = Domainpayload
   { domainpayloadName      :: String
