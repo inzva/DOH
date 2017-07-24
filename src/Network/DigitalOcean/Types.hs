@@ -120,3 +120,5 @@ type CertificateId  = String
 type SnapshotId     = String
 type DomainName     = String
 type DomainRecordId = Int
+type DropletId      = Int
+type RegionSlug     = String

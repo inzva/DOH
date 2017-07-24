@@ -49,8 +49,6 @@ instance ToJSON VolumePayload where
 
 instance Payload VolumePayload
 
-type DropletId  = Int
-type RegionSlug = String
 type VolumeName = String
 type Size       = Int
 
