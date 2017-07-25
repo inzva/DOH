@@ -77,12 +77,9 @@ put' _ uri queryParams payload = makeRequest (Proxy :: Proxy a) Put (baseURI <> 
 put :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> Endpoint -> Maybe QueryParams -> p -> DO a
 put _ endp = put' (Proxy :: Proxy a) (baseURI <> show endp)
 
-getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> Endpoint -> DO [a]
-getPaginated _ config endp = 
-  case config of
-    Just config -> do
-      let queryParams = paginationQueryParams config
-      pagination <- get (Proxy :: Proxy (PaginationState a)) endp (Just queryParams)
-      curr <$> paginateUntil config pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) url Nothing)
-    Nothing ->
-      curr <$> get (Proxy :: Proxy (PaginationState a)) endp Nothing
+getPaginated :: forall proxy a. Paginatable a => proxy a -> Maybe PaginationConfig -> Endpoint -> Maybe QueryParams -> DO [a]
+getPaginated _ config endp q' = do
+  let queryParams = paginationQueryParams config ++
+                    fromMaybe [] q'
+  pagination <- get (Proxy :: Proxy (PaginationState a)) endp (Just queryParams)
+  curr <$> paginateUntil (fromMaybe defaultPaginationConfig config) pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) url Nothing)

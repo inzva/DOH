@@ -43,3 +43,16 @@ instance FromJSON (PaginationState Image) where
   parseJSON (Object v) = parsePaginationState v "images"
 
 instance Paginatable Image
+
+data ImageType =
+  DistributionImage
+  | ApplicationImage
+
+instance Show ImageType where
+  show DistributionImage = "distribution"
+  show ApplicationImage = "application"
+
+data ImageOptions = ImageOptions
+  { imageType' :: Maybe ImageType
+  , isPrivate  :: Bool
+  }

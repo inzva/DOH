@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Network.DigitalOcean.Types where
 
@@ -26,7 +27,7 @@ import           Data.List
 import qualified Data.Set                  as Set
 -----------------------------------------------------------------
 
-type QueryParams = Set.Set (String, String)
+type QueryParams = [(String, String)]
 
 data RequestMethod =
     Get
@@ -41,7 +42,7 @@ instance Show RequestMethod where
   show Delete  = "DELETE"
 
 showQueryParams :: QueryParams -> String
-showQueryParams params = case Set.toAscList params of
+showQueryParams = \case
   [] -> ""
   ls -> "?" <> (intercalate "&" . map (\(k, v) -> k <> "=" <> v) $ ls)
 
@@ -51,7 +52,7 @@ data Paginatable a => PaginationState a = PaginationState
   { curr     :: [a]
   , page     :: Int
   , nextUrl  :: Maybe String
-  , total    :: Int
+  , total    :: Maybe Int
   , isLast   :: Bool
   } deriving (Show)
 
@@ -59,6 +60,10 @@ data PaginationConfig = PaginationConfig
   { pageSize :: Int
   , resultLimit :: Int
   }
+
+-- https://developers.digitalocean.com/documentation/v2/#links
+defaultPaginationConfig :: PaginationConfig
+defaultPaginationConfig = PaginationConfig 25 100
 
 newtype DO a = DO { runDO :: ReaderT Client (ExceptT String IO) a }
   deriving (Functor, Applicative, Monad, MonadIO, MonadError String, MonadReader Client)

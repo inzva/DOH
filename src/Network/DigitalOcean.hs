@@ -2,11 +2,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TupleSections #-}
 
 module Network.DigitalOcean where
 
 -----------------------------------------------------------------
-import           Data.Maybe                (fromJust, isNothing)
+import           Data.Maybe                (maybe)
 import           Data.Monoid               ((<>))
 import           Control.Lens
 import           Data.List                 (intercalate)
@@ -27,7 +29,7 @@ getAccounts :: DO Account
 getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) AccountEndpoint Nothing
 
 getActions :: Maybe PaginationConfig -> DO [Action]
-getActions config = getPaginated (Proxy :: Proxy Action) config ActionsEndpoint
+getActions config = getPaginated (Proxy :: Proxy Action) config ActionsEndpoint Nothing
 
 getAction :: ActionId -> DO Action
 getAction id' =
@@ -51,7 +53,7 @@ createVolume =
 
 getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
-  let queryParams = Just $ Set.fromAscList [("name", name), ("region", region)] in
+  let queryParams = Just [("name", name), ("region", region)] in
   unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint queryParams
 
 data ResourceType = VolumeResource
@@ -63,7 +65,7 @@ instance Show ResourceType where
 
 getSnapshots :: Maybe ResourceType -> DO [Snapshot]
 getSnapshots resourceType = do
-  let queryParams = maybe Nothing (\res -> Just $ Set.singleton ("resource_type", show res)) resourceType
+  let queryParams = ((:[]) . ("resource_type",) . show) <$> resourceType
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) SnapshotsEndpoint queryParams
 
 getSnapshot :: SnapshotId -> DO Snapshot
@@ -88,7 +90,7 @@ deleteVolume id' =
 
 deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
-  delete VolumesEndpoint . Just $ Set.fromAscList [("name", name), ("region", region)]
+  delete VolumesEndpoint $ Just [("name", name), ("region", region)]
 
 performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
 performSingleVolumeAction volumeId action =
@@ -121,7 +123,7 @@ getCertificate id' =
   unResponse <$> get (Proxy :: Proxy (Response Certificate)) (CertificateEndpoint id') Nothing
 
 getCertificates :: Maybe PaginationConfig -> DO [Certificate]
-getCertificates config = getPaginated (Proxy :: Proxy Certificate) config CertificatesEndpoint
+getCertificates config = getPaginated (Proxy :: Proxy Certificate) config CertificatesEndpoint Nothing
 
 deleteCertificate :: CertificateId -> DO ()
 deleteCertificate id' = delete (CertificateEndpoint id') Nothing
@@ -160,5 +162,10 @@ deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
 deleteDomainRecord dn' drid' =
   delete (DomainRecordEndpoint dn' drid') Nothing
 
-getImages :: Maybe PaginationConfig -> DO [Image]
-getImages config = getPaginated (Proxy :: Proxy Image) config ImagesEndpoint
+getImages :: Maybe PaginationConfig -> ImageOptions -> DO [Image]
+getImages config ImageOptions {..} =
+  getPaginated (Proxy :: Proxy Image) config ImagesEndpoint (Just queryParams)
+  where
+    queryParams = 
+      maybe [] ((:[]) . ("type",) . show) imageType' ++
+      bool [] [("private", "true")] isPrivate
