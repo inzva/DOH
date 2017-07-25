@@ -34,6 +34,7 @@ makeRequest :: forall proxy a p. (FromJSON a, Payload p) => proxy a -> RequestMe
 makeRequest _ method uri queryParams mbPayload = do
   liftIO $ print uri
   liftIO $ print . encode $ mbPayload
+  liftIO $ print . encode $ queryParams
   client <- ask
   let uri' = uri <> maybe mempty showQueryParams queryParams
   when (isNothing $ parseURI uri') $ throwError $ "URI cannot be parsed: " <> uri'
@@ -82,4 +83,6 @@ getPaginated _ config endp q' = do
   let queryParams = paginationQueryParams config ++
                     fromMaybe [] q'
   pagination <- get (Proxy :: Proxy (PaginationState a)) endp (Just queryParams)
-  curr <$> paginateUntil (fromMaybe defaultPaginationConfig config) pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) url Nothing)
+  curr <$> paginateUntil (fromMaybe defaultPaginationConfig config) pagination (\url -> get' (Proxy :: Proxy (PaginationState a)) (addPaginationParam url) Nothing)
+  where
+    addPaginationParam = (<> maybe mempty (<> "&page_size=") (show . pageSize <$> config))
