@@ -15,6 +15,7 @@ import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
 import           Data.Bool                 (bool)
+import qualified Data.Set                  as Set
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
 import           Network.DigitalOcean.Http
@@ -50,7 +51,7 @@ createVolume =
 
 getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
-  let queryParams = Just $ QueryParams [("region", region), ("name", name)] in
+  let queryParams = Just $ Set.fromAscList [("name", name), ("region", region)] in
   unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint queryParams
 
 data ResourceType = VolumeResource
@@ -62,7 +63,7 @@ instance Show ResourceType where
 
 getSnapshots :: Maybe ResourceType -> DO [Snapshot]
 getSnapshots resourceType = do
-  let queryParams = maybe Nothing (\res -> Just $ QueryParams [("resource_type", show res)]) resourceType
+  let queryParams = maybe Nothing (\res -> Just $ Set.singleton ("resource_type", show res)) resourceType
   unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) SnapshotsEndpoint queryParams
 
 getSnapshot :: SnapshotId -> DO Snapshot
@@ -87,7 +88,7 @@ deleteVolume id' =
 
 deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
-  delete VolumesEndpoint . Just $ QueryParams [("region", region), ("name", name)]
+  delete VolumesEndpoint . Just $ Set.fromAscList [("name", name), ("region", region)]
 
 performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
 performSingleVolumeAction volumeId action =
@@ -133,7 +134,7 @@ getDomain :: DomainName -> DO Domain
 getDomain name' =
   unResponse <$> get (Proxy :: Proxy (Response Domain)) (DomainEndpoint name') Nothing
 
-createDomain :: Domainpayload -> DO Domain
+createDomain :: DomainPayload -> DO Domain
 createDomain = fmap unResponse . post (Proxy :: Proxy (Response Domain)) DomainsEndpoint Nothing
 
 deleteDomain :: DomainName -> DO ()
@@ -158,3 +159,6 @@ updateDomainRecord dn' drid' =
 deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
 deleteDomainRecord dn' drid' =
   delete (DomainRecordEndpoint dn' drid') Nothing
+
+getImages :: Maybe PaginationConfig -> DO [Image]
+getImages config = getPaginated (Proxy :: Proxy Image) config ImagesEndpoint

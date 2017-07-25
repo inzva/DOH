@@ -37,12 +37,12 @@ instance FromJSON (PaginationState Domain) where
 
 instance Paginatable Domain
 
-data Domainpayload = Domainpayload
+data DomainPayload = DomainPayload
   { domainpayloadName      :: String
   , domainpayloadIpAddress :: String
   } deriving (Show, Generic)
 
-instance ToJSON Domainpayload where
+instance ToJSON DomainPayload where
   toJSON = genericToJSON $ aesonPrefix snakeCase
 
-instance Payload Domainpayload
+instance Payload DomainPayload

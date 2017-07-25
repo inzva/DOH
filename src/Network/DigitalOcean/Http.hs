@@ -35,7 +35,7 @@ makeRequest _ method uri queryParams mbPayload = do
   liftIO $ print uri
   liftIO $ print . encode $ mbPayload
   client <- ask
-  let uri' = uri <> maybe mempty show queryParams
+  let uri' = uri <> maybe mempty showQueryParams queryParams
   when (isNothing $ parseURI uri') $ throwError $ "URI cannot be parsed: " <> uri'
   manager <- liftIO newTlsManager
   initialRequest <- liftIO $ parseRequest uri'

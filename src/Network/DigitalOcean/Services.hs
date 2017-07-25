@@ -7,7 +7,7 @@ module Network.DigitalOcean.Services (
   , module Network.DigitalOcean.Services.Certificate
   , module Network.DigitalOcean.Services.Domain
   , module Network.DigitalOcean.Services.DomainRecord
-  , module Network.DigitalOcean.Services.Droplet
+  , module Network.DigitalOcean.Services.Image
 ) where
   
 import Network.DigitalOcean.Services.Region
@@ -18,4 +18,4 @@ import Network.DigitalOcean.Services.Snapshot
 import Network.DigitalOcean.Services.Certificate
 import Network.DigitalOcean.Services.Domain
 import Network.DigitalOcean.Services.DomainRecord
-import Network.DigitalOcean.Services.Droplet
+import Network.DigitalOcean.Services.Image

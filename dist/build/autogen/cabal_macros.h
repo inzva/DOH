@@ -35,6 +35,20 @@
   (major1) == 0 && (major2) <  10 || \
   (major1) == 0 && (major2) == 10 && (minor) <= 8)
 
+/* package containers-0.5.7.1 */
+#define VERSION_containers "0.5.7.1"
+#define MIN_VERSION_containers(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  5 || \
+  (major1) == 0 && (major2) == 5 && (minor) <= 7)
+
+/* package filepath-1.4.1.1 */
+#define VERSION_filepath "1.4.1.1"
+#define MIN_VERSION_filepath(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  4 || \
+  (major1) == 1 && (major2) == 4 && (minor) <= 1)
+
 /* package http-client-0.5.7.0 */
 #define VERSION_http_client "0.5.7.0"
 #define MIN_VERSION_http_client(major1,major2,minor) (\
@@ -90,34 +104,6 @@
   (major1) <  0 || \
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 6)
-
-/* package QuickCheck-2.10.0.1 */
-#define VERSION_QuickCheck "2.10.0.1"
-#define MIN_VERSION_QuickCheck(major1,major2,minor) (\
-  (major1) <  2 || \
-  (major1) == 2 && (major2) <  10 || \
-  (major1) == 2 && (major2) == 10 && (minor) <= 0)
-
-/* package filepath-1.4.1.1 */
-#define VERSION_filepath "1.4.1.1"
-#define MIN_VERSION_filepath(major1,major2,minor) (\
-  (major1) <  1 || \
-  (major1) == 1 && (major2) <  4 || \
-  (major1) == 1 && (major2) == 4 && (minor) <= 1)
-
-/* package interpolatedstring-perl6-1.0.0 */
-#define VERSION_interpolatedstring_perl6 "1.0.0"
-#define MIN_VERSION_interpolatedstring_perl6(major1,major2,minor) (\
-  (major1) <  1 || \
-  (major1) == 1 && (major2) <  0 || \
-  (major1) == 1 && (major2) == 0 && (minor) <= 0)
-
-/* package quickcheck-instances-0.3.16 */
-#define VERSION_quickcheck_instances "0.3.16"
-#define MIN_VERSION_quickcheck_instances(major1,major2,minor) (\
-  (major1) <  0 || \
-  (major1) == 0 && (major2) <  3 || \
-  (major1) == 0 && (major2) == 3 && (minor) <= 16)
 
 /* tool alex-3.2.1 */
 #define TOOL_VERSION_alex "3.2.1"
@@ -196,7 +182,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-HSi8gUrZ4y4LYXh4UXVNtH"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-DWE7klLyUmmFmP7Cgj6vZC"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-HSi8gUrZ4y4LYXh4UXVNtH"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-DWE7klLyUmmFmP7Cgj6vZC"
 

@@ -23,9 +23,10 @@ import           System.FilePath.Posix     ((</>))
 -----------------------------------------------------------------
 import           Data.Monoid
 import           Data.List
+import qualified Data.Set                  as Set
 -----------------------------------------------------------------
 
-newtype QueryParams = QueryParams [(String, String)]
+type QueryParams = Set.Set (String, String)
 
 data RequestMethod =
     Get
@@ -39,9 +40,10 @@ instance Show RequestMethod where
   show Put  = "PUT"
   show Delete  = "DELETE"
 
-instance Show QueryParams where
-  show (QueryParams []) = ""
-  show (QueryParams ls) = "?" <> (intercalate "&" . map (\(k, v) -> k <> "=" <> v) $ ls)
+showQueryParams :: QueryParams -> String
+showQueryParams params = case Set.toAscList params of
+  [] -> ""
+  ls -> "?" <> (intercalate "&" . map (\(k, v) -> k <> "=" <> v) $ ls)
 
 class (FromJSON a, Show a, FromJSON (PaginationState a)) => Paginatable a where
 
@@ -93,6 +95,7 @@ data Endpoint =
   | DomainEndpoint DomainName
   | DomainRecordsEndpoint DomainName
   | DomainRecordEndpoint DomainName DomainRecordId
+  | ImagesEndpoint
 
 instance Show Endpoint where
   show AccountEndpoint                 = "/account"
@@ -102,6 +105,7 @@ instance Show Endpoint where
   show SnapshotsEndpoint               = "/snapshots"
   show CertificatesEndpoint            = "/certificates"
   show DomainsEndpoint                 = "/domains"
+  show ImagesEndpoint                  = "/images"
   show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
   show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
   show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'
