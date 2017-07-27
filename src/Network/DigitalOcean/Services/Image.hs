@@ -56,3 +56,12 @@ data ImageOptions = ImageOptions
   { imageType' :: Maybe ImageType -- ^ Reference: https://developers.digitalocean.com/documentation/v2/#images
   , isPrivate  :: Bool            -- ^ If True, only user's images will be returned.
   }
+
+data ImagePayload = ImagePayload
+  { imagepayloadName :: String
+  } deriving (Show, Generic)
+
+instance Payload ImagePayload
+
+instance ToJSON ImagePayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase

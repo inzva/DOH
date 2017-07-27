@@ -12,7 +12,6 @@ import           Data.Maybe                (maybe)
 import           Data.Monoid               ((<>))
 import           Control.Lens
 import           Data.List                 (intercalate)
-import           Data.Proxy
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
@@ -176,4 +175,13 @@ getImageActions id' =
 
 getImage :: ImageId -> DO [Image]
 getImage id' =
-  unResponse <$> get (ImageActionsEndpoint id') Nothing
+  unResponse <$> get (ImageEndpoint id') Nothing
+
+getImageBySlug :: String -> DO [Image]
+getImageBySlug slug = unResponse <$> get (ImageBySlugEndpoint slug) Nothing
+
+updateImage :: ImageId -> ImagePayload -> DO Image
+updateImage id' = fmap unResponse . put (ImageEndpoint id') Nothing
+
+deleteImage :: ImageId -> DO ()
+deleteImage id' = delete (ImageEndpoint id') Nothing

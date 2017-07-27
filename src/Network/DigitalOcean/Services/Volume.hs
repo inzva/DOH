@@ -37,11 +37,11 @@ instance FromJSON Volume where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 data VolumePayload = VolumePayload
-  { volumePayloadSizeGigabytes :: Int
-  , volumePayloadName          :: String
-  , volumePayloadDescripton    :: String
-  , volumePayloadRegion        :: String
-  , volumePayloadSnapshotId    :: String
+  { volumepayloadSizeGigabytes :: Int
+  , volumepayloadName          :: String
+  , volumepayloadDescripton    :: String
+  , volumepayloadRegion        :: String
+  , volumepayloadSnapshotId    :: String
   } deriving (Show, Generic)
 
 instance ToJSON VolumePayload where
