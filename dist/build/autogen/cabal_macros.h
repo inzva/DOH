@@ -98,6 +98,13 @@
   (major1) == 1 && (major2) <  6 || \
   (major1) == 1 && (major2) == 6 && (minor) <= 0)
 
+/* package unordered-containers-0.2.7.2 */
+#define VERSION_unordered_containers "0.2.7.2"
+#define MIN_VERSION_unordered_containers(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  2 || \
+  (major1) == 0 && (major2) == 2 && (minor) <= 7)
+
 /* package uri-0.1.6.4 */
 #define VERSION_uri "0.1.6.4"
 #define MIN_VERSION_uri(major1,major2,minor) (\
@@ -182,7 +189,7 @@
   (major1) == 0 && (major2) <  29 || \
   (major1) == 0 && (major2) == 29 && (minor) <= 2)
 
-#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-DWE7klLyUmmFmP7Cgj6vZC"
+#define CURRENT_COMPONENT_ID "DigitalOcean-0.1.0.0-5eB3wacfgJqJF4JNAo75xr"
 
-#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-DWE7klLyUmmFmP7Cgj6vZC"
+#define CURRENT_PACKAGE_KEY "DigitalOcean-0.1.0.0-5eB3wacfgJqJF4JNAo75xr"
 

@@ -54,7 +54,7 @@ type VolumeName = String
 data VolumeAction =
     Attach VolumeId DropletId RegionSlug
   | Detach VolumeId DropletId RegionSlug
-  | Resize VolumeId Int RegionSlug
+  | ResizeVolume VolumeId Int RegionSlug
   | AttachByName VolumeName DropletId RegionSlug
   | DetachByName VolumeName DropletId RegionSlug
 
@@ -70,7 +70,7 @@ instance ToJSON VolumeAction where
            , "region"     .= region
            , "type"       .= ("detach" :: String)
            ]
-  toJSON (Resize _ size region) =
+  toJSON (ResizeVolume _ size region) =
     object [ "size" .= size
            , "region"     .= region
            , "type"       .= ("resize" :: String)

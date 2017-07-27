@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TupleSections #-}
 
@@ -102,7 +101,7 @@ performListVolumeAction action =
 performVolumeAction :: VolumeAction -> DO Action
 performVolumeAction action@(Attach volumeId _ _) = performSingleVolumeAction volumeId action
 performVolumeAction action@(Detach volumeId _ _) = performSingleVolumeAction volumeId action
-performVolumeAction action@(Resize volumeId _ _) = performSingleVolumeAction volumeId action
+performVolumeAction action@(ResizeVolume volumeId _ _) = performSingleVolumeAction volumeId action
 performVolumeAction action@AttachByName {}       = performListVolumeAction action
 performVolumeAction action@DetachByName {}       = performListVolumeAction action
 
@@ -191,3 +190,56 @@ getSizes = unResponse <$> get SizesEndpoint Nothing
 
 getDroplets :: Maybe PaginationConfig -> DO [Droplet]
 getDroplets config = getPaginated config DropletsEndpoint Nothing
+
+createDroplet :: DropletName -> IDropletPayload -> DO Droplet
+createDroplet name payload = unResponse <$> post DropletsEndpoint Nothing (SingleDropletPayload name payload)
+
+createDroplets :: [DropletName] -> IDropletPayload -> DO [Droplet]
+createDroplets names payload = unResponse <$> post DropletsEndpoint Nothing (MultipleDropletPayload names payload)
+
+getDroplet :: DropletId -> DO Droplet
+getDroplet id' = unResponse <$> get (DropletEndpoint id') Nothing
+
+getDropletsByTag :: String -> DO [Droplet]
+getDropletsByTag tag = unResponse <$> get DropletsEndpoint (Just [("tag_name", tag)])
+
+getDropletKernels :: DropletId -> DO [Kernel]
+getDropletKernels id' = unResponse <$> get (DropletKernelsEndpoint id') Nothing
+
+getDropletSnapshots :: DropletId -> DO [Snapshot]
+getDropletSnapshots id' = unResponse <$> get (DropletSnapshotsEndpoint id') Nothing
+
+getDropletBackups :: DropletId -> DO [Backup]
+getDropletBackups id' = unResponse <$> get (DropletBackupsEndpoint id') Nothing
+
+getDropletActions :: DropletId -> DO [Action]
+getDropletActions id' = unResponse <$> get (DropletActionsEndpoint id') Nothing
+
+deleteDroplet :: DropletId -> DO ()
+deleteDroplet id' = delete (DropletEndpoint id') Nothing
+
+deleteDropletByTag :: String -> DO ()
+deleteDropletByTag tag = delete DropletsEndpoint $ Just [("tag_name", tag)]
+
+getDropletNeighbors :: DropletId -> DO [Droplet]
+getDropletNeighbors id' = unResponse <$> get (DropletNeighborsEndpoint id') Nothing
+
+getNeighbors :: DO Neighbors
+getNeighbors = unResponse <$> get DropletsNeighborsEndpoint Nothing
+
+performDropletAction :: DropletId -> DropletAction -> DO Action
+performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') Nothing 
+
+{- WARNING: Currently has issue with the response format, see:
+ - https://github.com/digitalocean/api-v2/issues/164
+ -}
+performDropletActionOnTag :: String -> DropletAction -> DO [Action]
+performDropletActionOnTag tag action = do
+  unless (actionAllowedAsBulk action) $
+    throwError $
+      "Action " ++ show action ++ " not allowed as bulk. See \
+      \https://developers.digitalocean.com/documentation/v2/#acting-on-tagged-droplets"
+  unResponse <$> post DropletsActionsEndpoint (Just [("tag_name", tag)]) action
+
+getDropletAction :: DropletId -> ActionId -> DO Action
+getDropletAction dropletId actionId = unResponse <$> get (DropletActionEndpoint dropletId actionId) Nothing

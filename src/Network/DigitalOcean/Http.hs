@@ -12,6 +12,7 @@ import qualified Data.ByteString.Char8     as BSC
 import qualified Data.ByteString.Lazy      as LBS
 import           Network.HTTP.Client       hiding (Proxy)
 import           Network.HTTP.Client.TLS
+import           System.FilePath           ((</>))
 import           Data.Aeson
 import           Data.Proxy
 import           Data.Monoid
@@ -58,25 +59,25 @@ get' :: forall a. FromJSON a => String -> Maybe QueryParams -> DO a
 get' uri queryParams = makeRequest Get uri queryParams (Just EmptyPayload)
 
 get :: forall a. (FromJSON a) => Endpoint -> Maybe QueryParams -> DO a
-get endp = get' (baseURI <> show endp)
+get endp = get' (baseURI </> show endp)
 
 post' :: forall proxy a p. (FromJSON a, Payload p) => String -> Maybe QueryParams -> p -> DO a
 post' uri queryParams payload = makeRequest Post uri queryParams (Just payload)
 
 post :: forall a p. (FromJSON a, Payload p) => Endpoint -> Maybe QueryParams -> p -> DO a
-post endp = post' (baseURI <> show endp)
+post endp = post' (baseURI </> show endp)
 
 delete' :: String -> Maybe QueryParams -> DO ()
 delete' uri queryParams = makeRequest Delete uri queryParams (Just EmptyPayload)
 
 delete :: Endpoint -> Maybe QueryParams -> DO ()
-delete endp = delete' (baseURI <> show endp)
+delete endp = delete' (baseURI </> show endp)
 
 put' :: forall a p. (FromJSON a, Payload p) => String -> Maybe QueryParams -> p -> DO a
-put' uri queryParams payload = makeRequest Put (baseURI <> uri) queryParams (Just payload)
+put' uri queryParams payload = makeRequest Put uri queryParams (Just payload)
 
 put :: forall a p. (FromJSON a, Payload p) => Endpoint -> Maybe QueryParams -> p -> DO a
-put endp = put' (baseURI <> show endp)
+put endp = put' (baseURI </> show endp)
 
 getPaginated :: forall a. Paginatable a => Maybe PaginationConfig -> Endpoint -> Maybe QueryParams -> DO [a]
 getPaginated config endp q' = do
