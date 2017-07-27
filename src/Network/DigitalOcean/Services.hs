@@ -11,8 +11,9 @@ module Network.DigitalOcean.Services (
   , module Network.DigitalOcean.Services.Size
   , module Network.DigitalOcean.Services.Droplet
   , module Network.DigitalOcean.Services.FloatingIp
+  , module Network.DigitalOcean.Services.Firewall
 ) where
-  
+
 import Network.DigitalOcean.Services.Region
 import Network.DigitalOcean.Services.Action
 import Network.DigitalOcean.Services.Account
@@ -25,3 +26,4 @@ import Network.DigitalOcean.Services.Image
 import Network.DigitalOcean.Services.Size
 import Network.DigitalOcean.Services.Droplet
 import Network.DigitalOcean.Services.FloatingIp
+import Network.DigitalOcean.Services.Firewall

@@ -177,4 +177,5 @@ type DropletId      = Int
 type RegionSlug     = String
 type ImageId        = Int
 type DropletName    = String
-type IpAddress = String
+type IpAddress      = String
+type FirewallId     = String
