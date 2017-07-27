@@ -91,6 +91,7 @@ data Endpoint =
   | DomainsEndpoint
   | ImagesEndpoint
   | SizesEndpoint
+  | DropletsEndpoint
   | VolumeEndpoint VolumeId
   | SnapshotEndpoint SnapshotId
   | VolumeSnapshotsEndpoint VolumeId
@@ -116,6 +117,7 @@ instance Show Endpoint where
   show DomainsEndpoint                 = "/domains"
   show ImagesEndpoint                  = "/images"
   show SizesEndpoint                   = "/sizes"
+  show DropletsEndpoint                = "/droplets"
   show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
   show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
   show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'

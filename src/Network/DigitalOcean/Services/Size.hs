@@ -21,7 +21,7 @@ data Size = Size
   , sizeMemory       :: Int
   , sizeVcpus        :: Int
   , sizeDisk         :: Int
-  , sizeRegions      :: [String]
+  -- , sizeRegions      :: [String]
   } deriving (Show, Generic)
 
 instance FromJSON (Response [Size]) where

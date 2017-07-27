@@ -36,10 +36,10 @@ instance FromJSON Snapshot where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
 newtype SnapshotPayload = SnapshotPayload
-  { name :: String }
+  { snapshotpayloadName :: String
+  } deriving (Show, Generic)
 
 instance ToJSON SnapshotPayload where
-  toJSON (SnapshotPayload name) = 
-    object [ "name" .= name ]
+  toJSON = genericToJSON $ aesonPrefix snakeCase
 
 instance Payload SnapshotPayload where

@@ -188,3 +188,6 @@ deleteImage id' = delete (ImageEndpoint id') Nothing
 
 getSizes :: DO [Size]
 getSizes = unResponse <$> get SizesEndpoint Nothing
+
+getDroplets :: Maybe PaginationConfig -> DO [Droplet]
+getDroplets config = getPaginated config DropletsEndpoint Nothing
