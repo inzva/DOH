@@ -10,6 +10,7 @@ module Network.DigitalOcean.Services (
   , module Network.DigitalOcean.Services.Image
   , module Network.DigitalOcean.Services.Size
   , module Network.DigitalOcean.Services.Droplet
+  , module Network.DigitalOcean.Services.FloatingIp
 ) where
   
 import Network.DigitalOcean.Services.Region
@@ -23,3 +24,4 @@ import Network.DigitalOcean.Services.DomainRecord
 import Network.DigitalOcean.Services.Image
 import Network.DigitalOcean.Services.Size
 import Network.DigitalOcean.Services.Droplet
+import Network.DigitalOcean.Services.FloatingIp

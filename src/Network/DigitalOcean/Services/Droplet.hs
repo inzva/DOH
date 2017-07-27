@@ -14,6 +14,7 @@ import qualified Data.HashMap.Lazy as HML
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
 import           Network.DigitalOcean.Utils.Pagination
+import           Network.DigitalOcean.Utils.Actions
 import           Network.DigitalOcean.Services.Region
 import           Network.DigitalOcean.Services.Image
 import           Network.DigitalOcean.Services.Size
@@ -48,8 +49,6 @@ instance FromJSON DropletStatus where
   parseJSON "archive" = return Archive
 
 -----------------------------------------------------------------
-
-type IpAddress = String
 
 data Network = Network
   { networkIpAddress :: IpAddress
@@ -189,9 +188,6 @@ data DropletAction =
   | EnablePrivateNetworking
   | TakeSnapshot String
   deriving (Eq, Show)
-
-actionType' :: KeyValue kv => String -> kv
-actionType' = (.=) "type"
 
 {- Reference:
  - https://developers.digitalocean.com/documentation/v2/#acting-on-tagged-droplets

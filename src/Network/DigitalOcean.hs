@@ -230,7 +230,7 @@ getNeighbors = unResponse <$> get DropletsNeighborsEndpoint Nothing
 performDropletAction :: DropletId -> DropletAction -> DO Action
 performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') Nothing 
 
-{- WARNING: Currently has issue with the response format, see:
+{- Warning! Currently has issue with the response format, see:
  - https://github.com/digitalocean/api-v2/issues/164
  -}
 performDropletActionOnTag :: String -> DropletAction -> DO [Action]
@@ -243,3 +243,24 @@ performDropletActionOnTag tag action = do
 
 getDropletAction :: DropletId -> ActionId -> DO Action
 getDropletAction dropletId actionId = unResponse <$> get (DropletActionEndpoint dropletId actionId) Nothing
+
+getFloatingIps :: DO [FloatingIp]
+getFloatingIps = unResponse <$> get FloatingIpsEndpoint Nothing
+
+createFloatingIp :: FloatingIpPayload -> DO FloatingIp
+createFloatingIp = fmap unResponse . post FloatingIpsEndpoint Nothing
+
+getFloatingIp :: IpAddress -> DO FloatingIp
+getFloatingIp ip = unResponse <$> get (FloatingIpEndpoint ip) Nothing
+
+deleteFloatingIp :: IpAddress -> DO ()
+deleteFloatingIp ip = delete (FloatingIpEndpoint ip) Nothing
+
+performFloatingIpAction :: IpAddress -> FloatingIpAction -> DO Action
+performFloatingIpAction ip = fmap unResponse . post (FloatingIpActionsEndpoint ip) Nothing
+
+getFloatingIpActions :: IpAddress -> DO [Action]
+getFloatingIpActions ip = unResponse <$> get (FloatingIpActionsEndpoint ip) Nothing
+
+getFloatingIpAction :: IpAddress -> ActionId -> DO Action
+getFloatingIpAction ip aId = unResponse <$> get (FloatingIpActionEndpoint ip aId) Nothing

@@ -96,6 +96,7 @@ data Endpoint =
   | KernelsEndpoint
   | BackupsEndpoint
   | NeighborsEndpoint
+  | FloatingIpsEndpoint
   | DropletsNeighborsEndpoint
   | VolumeEndpoint VolumeId
   | SnapshotEndpoint SnapshotId
@@ -119,45 +120,52 @@ data Endpoint =
   | DropletNeighborsEndpoint DropletId
   | DropletsActionsEndpoint
   | DropletActionEndpoint DropletId ActionId
+  | FloatingIpEndpoint IpAddress
+  | FloatingIpActionsEndpoint IpAddress
+  | FloatingIpActionEndpoint IpAddress ActionId
 
 instance Show Endpoint where
-  show AccountEndpoint                 = "account"
-  show ActionsEndpoint                 = "actions"
-  show RegionsEndpoint                 = "regions"
-  show VolumesEndpoint                 = "volumes"
-  show SnapshotsEndpoint               = "snapshots"
-  show CertificatesEndpoint            = "certificates"
-  show DomainsEndpoint                 = "domains"
-  show ImagesEndpoint                  = "images"
-  show SizesEndpoint                   = "sizes"
-  show DropletsEndpoint                = "droplets"
-  show RecordsEndpoint                 = "records"
-  show KernelsEndpoint                 = "kernels"
-  show BackupsEndpoint                 = "backups"
-  show NeighborsEndpoint               = "neighbors"
-  show DropletsNeighborsEndpoint       = "reports/droplet_neighbors"
-  show (ActionEndpoint id')            = show ActionsEndpoint        </> show id'
-  show (VolumeEndpoint id')            = show VolumesEndpoint        </> id'
-  show (SnapshotEndpoint id')          = show SnapshotsEndpoint      </> id'
-  show (VolumeSnapshotsEndpoint id')   = show VolumesEndpoint        </> id'                    </> show SnapshotsEndpoint
-  show VolumesActionsEndpoint          = show VolumesEndpoint        </> show SnapshotsEndpoint
-  show (VolumeActionsEndpoint vId)     = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint
-  show (VolumeActionEndpoint vId aId)  = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint   </> show aId
-  show (CertificateEndpoint id')       = show CertificatesEndpoint   </> id'
-  show (DomainEndpoint name')          = show DomainsEndpoint        </> name'
-  show (DomainRecordsEndpoint name')   = show (DomainEndpoint name') </> show RecordsEndpoint
-  show (DomainRecordEndpoint d' dr')   = show (DomainEndpoint d')    </> show RecordsEndpoint   </> show dr'
-  show (ImageActionsEndpoint id')      = show ImagesEndpoint         </> show id'               </> show ActionsEndpoint
-  show (ImageEndpoint id')             = show ImagesEndpoint         </> show id'
-  show (ImageBySlugEndpoint name')     = show ImagesEndpoint         </> name'
-  show (DropletEndpoint id')           = show DropletsEndpoint       </> show id'
-  show (DropletKernelsEndpoint id')    = show DropletsEndpoint       </> show id'               </> show KernelsEndpoint
-  show (DropletSnapshotsEndpoint id')  = show DropletsEndpoint       </> show id'               </> show SnapshotsEndpoint
-  show (DropletBackupsEndpoint id')    = show DropletsEndpoint       </> show id'               </> show BackupsEndpoint
-  show (DropletActionsEndpoint id')    = show DropletsEndpoint       </> show id'               </> show ActionsEndpoint
-  show (DropletNeighborsEndpoint id')  = show DropletsEndpoint       </> show id'               </> show NeighborsEndpoint
-  show DropletsActionsEndpoint         = show DropletsEndpoint       </> show ActionsEndpoint
-  show (DropletActionEndpoint dId aId) = show DropletsEndpoint       </> show dId               </> show ActionsEndpoint   </> show aId
+  show AccountEndpoint                        = "account"
+  show ActionsEndpoint                        = "actions"
+  show RegionsEndpoint                        = "regions"
+  show VolumesEndpoint                        = "volumes"
+  show SnapshotsEndpoint                      = "snapshots"
+  show CertificatesEndpoint                   = "certificates"
+  show DomainsEndpoint                        = "domains"
+  show ImagesEndpoint                         = "images"
+  show SizesEndpoint                          = "sizes"
+  show DropletsEndpoint                       = "droplets"
+  show RecordsEndpoint                        = "records"
+  show KernelsEndpoint                        = "kernels"
+  show BackupsEndpoint                        = "backups"
+  show NeighborsEndpoint                      = "neighbors"
+  show DropletsNeighborsEndpoint              = "reports/droplet_neighbors"
+  show FloatingIpsEndpoint                    = "floating_ips"
+  show (ActionEndpoint id')                   = show ActionsEndpoint        </> show id'
+  show (VolumeEndpoint id')                   = show VolumesEndpoint        </> id'
+  show (SnapshotEndpoint id')                 = show SnapshotsEndpoint      </> id'
+  show (VolumeSnapshotsEndpoint id')          = show VolumesEndpoint        </> id'                    </> show SnapshotsEndpoint
+  show VolumesActionsEndpoint                 = show VolumesEndpoint        </> show SnapshotsEndpoint
+  show (VolumeActionsEndpoint vId)            = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint
+  show (VolumeActionEndpoint vId aId)         = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint   </> show aId
+  show (CertificateEndpoint id')              = show CertificatesEndpoint   </> id'
+  show (DomainEndpoint name')                 = show DomainsEndpoint        </> name'
+  show (DomainRecordsEndpoint name')          = show (DomainEndpoint name') </> show RecordsEndpoint
+  show (DomainRecordEndpoint d' dr')          = show (DomainEndpoint d')    </> show RecordsEndpoint   </> show dr'
+  show (ImageActionsEndpoint id')             = show ImagesEndpoint         </> show id'               </> show ActionsEndpoint
+  show (ImageEndpoint id')                    = show ImagesEndpoint         </> show id'
+  show (ImageBySlugEndpoint name')            = show ImagesEndpoint         </> name'
+  show (DropletEndpoint id')                  = show DropletsEndpoint       </> show id'
+  show (DropletKernelsEndpoint id')           = show DropletsEndpoint       </> show id'               </> show KernelsEndpoint
+  show (DropletSnapshotsEndpoint id')         = show DropletsEndpoint       </> show id'               </> show SnapshotsEndpoint
+  show (DropletBackupsEndpoint id')           = show DropletsEndpoint       </> show id'               </> show BackupsEndpoint
+  show (DropletActionsEndpoint id')           = show DropletsEndpoint       </> show id'               </> show ActionsEndpoint
+  show (DropletNeighborsEndpoint id')         = show DropletsEndpoint       </> show id'               </> show NeighborsEndpoint
+  show DropletsActionsEndpoint                = show DropletsEndpoint       </> show ActionsEndpoint
+  show (DropletActionEndpoint dId aId)        = show DropletsEndpoint       </> show dId               </> show ActionsEndpoint   </> show aId
+  show (FloatingIpEndpoint ipAddr)            = show FloatingIpsEndpoint    </> ipAddr
+  show (FloatingIpActionsEndpoint ipAddr)     = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint
+  show (FloatingIpActionEndpoint ipAddr aId)  = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint   </> show aId
 
 type VolumeId       = String
 type ActionId       = Int
@@ -169,3 +177,4 @@ type DropletId      = Int
 type RegionSlug     = String
 type ImageId        = Int
 type DropletName    = String
+type IpAddress = String
