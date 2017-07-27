@@ -101,6 +101,7 @@ data Endpoint =
   | DomainRecordsEndpoint DomainName
   | DomainRecordEndpoint DomainName DomainRecordId
   | ImagesEndpoint
+  | ImageActionsEndpoint ImageId
 
 instance Show Endpoint where
   show AccountEndpoint                 = "/account"
@@ -122,6 +123,7 @@ instance Show Endpoint where
   show (DomainEndpoint name')          = show DomainsEndpoint </> name'
   show (DomainRecordsEndpoint name')   = show (DomainEndpoint name') <> "/records"
   show (DomainRecordEndpoint d' dr')   = show (DomainEndpoint d') <> "/records" </> show dr'
+  show (ImageActionsEndpoint id')      = show ImagesEndpoint </> show id' <> show ActionsEndpoint
 
 type VolumeId       = String
 type ActionId       = Int
@@ -131,3 +133,4 @@ type DomainName     = String
 type DomainRecordId = Int
 type DropletId      = Int
 type RegionSlug     = String
+type ImageId        = Int

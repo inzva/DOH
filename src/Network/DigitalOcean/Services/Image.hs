@@ -16,7 +16,7 @@ import        Network.DigitalOcean.Services.Action
 -----------------------------------------------------------------
 
 data Image = Image
-  { imageId            :: Int
+  { imageId            :: ImageId
   , imageName          :: String
   , imageType          :: String
   , imageDistribution  :: String
@@ -53,6 +53,6 @@ instance Show ImageType where
   show ApplicationImage = "application"
 
 data ImageOptions = ImageOptions
-  { imageType' :: Maybe ImageType
-  , isPrivate  :: Bool
+  { imageType' :: Maybe ImageType -- ^ Reference: https://developers.digitalocean.com/documentation/v2/#images
+  , isPrivate  :: Bool            -- ^ If True, only user's images will be returned.
   }

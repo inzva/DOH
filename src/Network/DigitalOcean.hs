@@ -26,35 +26,35 @@ import           Network.DigitalOcean.Services
 -----------------------------------------------------------------
 
 getAccounts :: DO Account
-getAccounts = unResponse <$> get (Proxy :: Proxy (Response Account)) AccountEndpoint Nothing
+getAccounts = unResponse <$> get AccountEndpoint Nothing
 
 getActions :: Maybe PaginationConfig -> DO [Action]
-getActions config = getPaginated (Proxy :: Proxy Action) config ActionsEndpoint Nothing
+getActions config = getPaginated config ActionsEndpoint Nothing
 
 getAction :: ActionId -> DO Action
 getAction id' =
-  unResponse <$> get (Proxy :: Proxy (Response Action)) (ActionEndpoint id') Nothing
+  unResponse <$> get (ActionEndpoint id') Nothing
 
 getRegions :: DO [Region]
 getRegions =
-  unResponse <$> get (Proxy :: Proxy (Response [Region])) RegionsEndpoint Nothing
+  unResponse <$> get RegionsEndpoint Nothing
 
 getVolumes :: DO [Volume]
 getVolumes =
-  unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint Nothing
+  unResponse <$> get VolumesEndpoint Nothing
 
 getVolume :: VolumeId -> DO Volume
 getVolume id' =
-  unResponse <$> get (Proxy :: Proxy (Response Volume)) (VolumeEndpoint id') Nothing
+  unResponse <$> get (VolumeEndpoint id') Nothing
 
 createVolume :: VolumePayload -> DO Volume
 createVolume =
-  fmap unResponse . post (Proxy :: Proxy (Response Volume)) VolumesEndpoint Nothing
+  fmap unResponse . post VolumesEndpoint Nothing
 
 getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
   let queryParams = Just [("name", name), ("region", region)] in
-  unResponse <$> get (Proxy :: Proxy (Response [Volume])) VolumesEndpoint queryParams
+  unResponse <$> get VolumesEndpoint queryParams
 
 data ResourceType = VolumeResource
                   | DropletResource
@@ -66,11 +66,11 @@ instance Show ResourceType where
 getSnapshots :: Maybe ResourceType -> DO [Snapshot]
 getSnapshots resourceType = do
   let queryParams = ((:[]) . ("resource_type",) . show) <$> resourceType
-  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) SnapshotsEndpoint queryParams
+  unResponse <$> get SnapshotsEndpoint queryParams
 
 getSnapshot :: SnapshotId -> DO Snapshot
 getSnapshot id' =
-  unResponse <$> get (Proxy :: Proxy (Response Snapshot)) (SnapshotEndpoint id') Nothing
+  unResponse <$> get (SnapshotEndpoint id') Nothing
 
 deleteSnapshot :: SnapshotId -> DO ()
 deleteSnapshot id' =
@@ -78,11 +78,11 @@ deleteSnapshot id' =
 
 getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
 getSnapshotsOfVolume volumeId =
-  unResponse <$> get (Proxy :: Proxy (Response [Snapshot])) (VolumeSnapshotsEndpoint volumeId) Nothing
+  unResponse <$> get (VolumeSnapshotsEndpoint volumeId) Nothing
 
 createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
 createSnapshotOfVolume volumeId =
-  fmap unResponse . post (Proxy :: Proxy (Response Snapshot)) (VolumeSnapshotsEndpoint volumeId) Nothing
+  fmap unResponse . post (VolumeSnapshotsEndpoint volumeId) Nothing
 
 deleteVolume :: VolumeId -> DO ()
 deleteVolume id' =
@@ -94,11 +94,11 @@ deleteVolumeByName region name =
 
 performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
 performSingleVolumeAction volumeId action =
-  unResponse <$> post (Proxy :: Proxy (Response Action)) (VolumeActionsEndpoint volumeId) Nothing action
+  unResponse <$> post (VolumeActionsEndpoint volumeId) Nothing action
 
 performListVolumeAction :: VolumeAction -> DO Action
 performListVolumeAction action =
-  unResponse <$> post (Proxy :: Proxy (Response Action)) VolumesActionsEndpoint Nothing action
+  unResponse <$> post VolumesActionsEndpoint Nothing action
 
 performVolumeAction :: VolumeAction -> DO Action
 performVolumeAction action@(Attach volumeId _ _) = performSingleVolumeAction volumeId action
@@ -109,54 +109,54 @@ performVolumeAction action@DetachByName {}       = performListVolumeAction actio
 
 getVolumeActions :: VolumeId -> DO [Action]
 getVolumeActions volumeId =
-  unResponse <$> get (Proxy :: Proxy (Response [Action])) (VolumeActionsEndpoint volumeId) Nothing
+  unResponse <$> get (VolumeActionsEndpoint volumeId) Nothing
 
 getVolumeAction :: VolumeId -> ActionId -> DO Action
 getVolumeAction volumeId actionId =
-  unResponse <$> get (Proxy :: Proxy (Response Action)) (VolumeActionEndpoint volumeId actionId) Nothing
+  unResponse <$> get (VolumeActionEndpoint volumeId actionId) Nothing
 
 createCertificate :: Certificatepayload -> DO Certificate
-createCertificate = fmap unResponse . post (Proxy :: Proxy (Response Certificate)) CertificatesEndpoint Nothing
+createCertificate = fmap unResponse . post CertificatesEndpoint Nothing
 
 getCertificate :: CertificateId -> DO Certificate
 getCertificate id' =
-  unResponse <$> get (Proxy :: Proxy (Response Certificate)) (CertificateEndpoint id') Nothing
+  unResponse <$> get (CertificateEndpoint id') Nothing
 
 getCertificates :: Maybe PaginationConfig -> DO [Certificate]
-getCertificates config = getPaginated (Proxy :: Proxy Certificate) config CertificatesEndpoint Nothing
+getCertificates config = getPaginated config CertificatesEndpoint Nothing
 
 deleteCertificate :: CertificateId -> DO ()
 deleteCertificate id' = delete (CertificateEndpoint id') Nothing
 
 getDomains :: DO [Domain]
 getDomains =
-  unResponse <$> get (Proxy :: Proxy (Response [Domain])) DomainsEndpoint Nothing
+  unResponse <$> get DomainsEndpoint Nothing
 
 getDomain :: DomainName -> DO Domain
 getDomain name' =
-  unResponse <$> get (Proxy :: Proxy (Response Domain)) (DomainEndpoint name') Nothing
+  unResponse <$> get (DomainEndpoint name') Nothing
 
 createDomain :: DomainPayload -> DO Domain
-createDomain = fmap unResponse . post (Proxy :: Proxy (Response Domain)) DomainsEndpoint Nothing
+createDomain = fmap unResponse . post DomainsEndpoint Nothing
 
 deleteDomain :: DomainName -> DO ()
 deleteDomain name' = delete (DomainEndpoint name') Nothing
 
 getDomainRecords :: DomainName -> DO [DomainRecord]
 getDomainRecords domainName' =
-  unResponse <$> get (Proxy :: Proxy (Response [DomainRecord])) (DomainRecordsEndpoint domainName') Nothing
+  unResponse <$> get (DomainRecordsEndpoint domainName') Nothing
 
 createDomainRecord :: DomainName -> DomainRecordPayload -> DO DomainRecord
 createDomainRecord domainName' =
-  fmap unResponse . post (Proxy :: Proxy (Response DomainRecord)) (DomainRecordsEndpoint domainName') Nothing
+  fmap unResponse . post (DomainRecordsEndpoint domainName') Nothing
 
 getDomainRecord :: DomainName -> DomainRecordId -> DO DomainRecord
 getDomainRecord dn' drid' =
-  unResponse <$> get (Proxy :: Proxy (Response DomainRecord)) (DomainRecordEndpoint dn' drid') Nothing
+  unResponse <$> get (DomainRecordEndpoint dn' drid') Nothing
 
 updateDomainRecord :: DomainName -> DomainRecordId -> DomainRecordPayload -> DO DomainRecord
 updateDomainRecord dn' drid' =
-  fmap unResponse . put (Proxy :: Proxy (Response DomainRecord)) (DomainRecordEndpoint dn' drid') Nothing
+  fmap unResponse . put (DomainRecordEndpoint dn' drid') Nothing
 
 deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
 deleteDomainRecord dn' drid' =
@@ -164,8 +164,16 @@ deleteDomainRecord dn' drid' =
 
 getImages :: Maybe PaginationConfig -> ImageOptions -> DO [Image]
 getImages config ImageOptions {..} =
-  getPaginated (Proxy :: Proxy Image) config ImagesEndpoint (Just queryParams)
+  getPaginated config ImagesEndpoint (Just queryParams)
   where
     queryParams = 
       maybe [] ((:[]) . ("type",) . show) imageType' ++
       bool [] [("private", "true")] isPrivate
+
+getImageActions :: ImageId -> DO [Action]
+getImageActions id' =
+  unResponse <$> get (ImageActionsEndpoint id') Nothing
+
+getImage :: ImageId -> DO [Image]
+getImage id' =
+  unResponse <$> get (ImageActionsEndpoint id') Nothing
