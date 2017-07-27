@@ -13,6 +13,7 @@ import        Data.Time.Clock
 import        Network.DigitalOcean.Types
 import        Network.DigitalOcean.Utils.Pagination
 import        Network.DigitalOcean.Services.Region
+import        Network.DigitalOcean.Services.Image
 -----------------------------------------------------------------
 
 data DropletStatus =

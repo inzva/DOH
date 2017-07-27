@@ -50,12 +50,11 @@ instance ToJSON VolumePayload where
 instance Payload VolumePayload
 
 type VolumeName = String
-type Size       = Int
 
 data VolumeAction =
     Attach VolumeId DropletId RegionSlug
   | Detach VolumeId DropletId RegionSlug
-  | Resize VolumeId Size RegionSlug
+  | Resize VolumeId Int RegionSlug
   | AttachByName VolumeName DropletId RegionSlug
   | DetachByName VolumeName DropletId RegionSlug
 

@@ -87,8 +87,11 @@ data Endpoint =
   | ActionEndpoint ActionId
   | RegionsEndpoint
   | VolumesEndpoint
-  | VolumeEndpoint VolumeId
   | SnapshotsEndpoint
+  | DomainsEndpoint
+  | ImagesEndpoint
+  | SizesEndpoint
+  | VolumeEndpoint VolumeId
   | SnapshotEndpoint SnapshotId
   | VolumeSnapshotsEndpoint VolumeId
   | VolumesActionsEndpoint
@@ -96,11 +99,9 @@ data Endpoint =
   | VolumeActionsEndpoint VolumeId
   | CertificateEndpoint CertificateId
   | CertificatesEndpoint
-  | DomainsEndpoint
   | DomainEndpoint DomainName
   | DomainRecordsEndpoint DomainName
   | DomainRecordEndpoint DomainName DomainRecordId
-  | ImagesEndpoint
   | ImageActionsEndpoint ImageId
   | ImageEndpoint ImageId
   | ImageBySlugEndpoint String
@@ -114,6 +115,7 @@ instance Show Endpoint where
   show CertificatesEndpoint            = "/certificates"
   show DomainsEndpoint                 = "/domains"
   show ImagesEndpoint                  = "/images"
+  show SizesEndpoint                   = "/sizes"
   show (ActionEndpoint id')            = show ActionsEndpoint </> show id'
   show (VolumeEndpoint id')            = show VolumesEndpoint </> id'
   show (SnapshotEndpoint id')          = show SnapshotsEndpoint </> id'

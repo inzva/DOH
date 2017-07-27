@@ -185,3 +185,6 @@ updateImage id' = fmap unResponse . put (ImageEndpoint id') Nothing
 
 deleteImage :: ImageId -> DO ()
 deleteImage id' = delete (ImageEndpoint id') Nothing
+
+getSizes :: DO [Size]
+getSizes = unResponse <$> get SizesEndpoint Nothing
