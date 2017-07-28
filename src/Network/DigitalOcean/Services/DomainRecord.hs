@@ -43,11 +43,11 @@ instance Paginatable DomainRecord
 
 data DomainRecordPayload = DomainRecordPayload
   { domainrecordpayloadType     :: String
-  , domainrecordpayloadName     :: String
-  , domainrecordpayloadData     :: String
+  , domainrecordpayloadName     :: Maybe String
+  , domainrecordpayloadData     :: Maybe String
   , domainrecordpayloadPriority :: Maybe Int
   , domainrecordpayloadPort     :: Maybe Int
-  , domainrecordpayloadTtl      :: Int -- Should this be maybe? https://developers.digitalocean.com/documentation/v2/#create-a-new-domain-record
+  , domainrecordpayloadTtl      :: Maybe Int
   , domainrecordpayloadWeight   :: Maybe Int
   } deriving (Show, Generic)
 

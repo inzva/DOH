@@ -52,11 +52,11 @@ instance Payload VolumePayload
 type VolumeName = String
 
 data VolumeAction =
-    Attach VolumeId DropletId RegionSlug
-  | Detach VolumeId DropletId RegionSlug
-  | ResizeVolume VolumeId Int RegionSlug
-  | AttachByName VolumeName DropletId RegionSlug
-  | DetachByName VolumeName DropletId RegionSlug
+    Attach VolumeId DropletId (Maybe RegionSlug)
+  | Detach VolumeId DropletId (Maybe RegionSlug)
+  | ResizeVolume VolumeId Int (Maybe RegionSlug)
+  | AttachByName VolumeName DropletId (Maybe RegionSlug)
+  | DetachByName VolumeName DropletId (Maybe RegionSlug)
 
 instance Payload VolumeAction where
 instance ToJSON VolumeAction where

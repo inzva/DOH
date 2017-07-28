@@ -144,14 +144,14 @@ data IDropletPayload = IDropletPayload
   { dropletpayloadRegion            :: String
   , dropletpayloadSize              :: String
   , dropletpayloadImage             :: String -- ^ number (if using an image ID), or String (if using a public image slug)
-  , dropletpayloadSshKeys           :: [String]
-  , dropletpayloadBackups           :: Bool
-  , dropletpayloadIpv6              :: Bool
-  , dropletpayloadPrivateNetworking :: Bool
-  , dropletpayloadUserData          :: String
-  , dropletpayloadMonitoring        :: Bool
-  , dropletpayloadVolumes           :: [String]
-  , dropletpayloadTags              :: [String]
+  , dropletpayloadSshKeys           :: Maybe [String]
+  , dropletpayloadBackups           :: Maybe Bool
+  , dropletpayloadIpv6              :: Maybe Bool
+  , dropletpayloadPrivateNetworking :: Maybe Bool
+  , dropletpayloadUserData          :: Maybe String
+  , dropletpayloadMonitoring        :: Maybe Bool
+  , dropletpayloadVolumes           :: Maybe [String]
+  , dropletpayloadTags              :: Maybe [String]
   } deriving (Show, Generic)
 
 instance ToJSON IDropletPayload where
@@ -180,13 +180,13 @@ data DropletAction =
   | PowerOn
   | Restore String
   | PasswordReset
-  | ResizeDroplet Bool String
+  | ResizeDroplet (Maybe Bool) String
   | Rebuild String
   | Rename String
   | ChangeKernel Int
   | EnableIpV6
   | EnablePrivateNetworking
-  | TakeSnapshot String
+  | TakeSnapshot (Maybe String)
   deriving (Eq, Show)
 
 {- Reference:
