@@ -23,6 +23,8 @@ data PendingChange = PendingChange
 instance FromJSON PendingChange where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
+-----------------------------------------------------------------
+
 data Protocol =
     Tcp
   | Udp
@@ -36,15 +38,25 @@ instance FromJSON Protocol where
       "udp"  -> Udp
       "icmp" -> Icmp
 
+instance ToJSON Protocol where
+  toJSON Tcp = String "tcp"
+  toJSON Udp = String "udp"
+  toJSON Icmp = String "icmp"
+
+-----------------------------------------------------------------
+
 data Channel = Channel
-  { channelAddresses :: [String]
-  , channelDropletIds :: [DropletId]
-  , channelLoadBalancerUids :: [String]
-  , channelTags :: [String]
+  { channelAddresses        :: Maybe [String]
+  , channelDropletIds       :: Maybe [DropletId]
+  , channelLoadBalancerUids :: Maybe [String]
+  , channelTags             :: Maybe [String]
   } deriving (Show, Generic)
 
 instance FromJSON Channel where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
+
+instance ToJSON Channel where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
 
 data InboundRule = InboundRule
   { inboundruleProtocol :: Protocol
@@ -55,6 +67,9 @@ data InboundRule = InboundRule
 instance FromJSON InboundRule where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
 
+instance ToJSON InboundRule where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
 data OutboundRule = OutboundRule
   { outboundruleProtocol     :: Protocol
   , outboundrulePorts        :: String
@@ -63,6 +78,11 @@ data OutboundRule = OutboundRule
 
 instance FromJSON OutboundRule where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
+
+instance ToJSON OutboundRule where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+-----------------------------------------------------------------
 
 data Firewall = Firewall
   { firewallId             :: FirewallId
@@ -91,3 +111,18 @@ instance FromJSON (PaginationState Firewall) where
   parseJSON (Object v) = parsePaginationState v "domains"
 
 instance Paginatable Firewall
+
+-----------------------------------------------------------------
+
+data FirewallPayload = FirewallPayload
+  { name          :: String
+  , inboundRules  :: [InboundRule]
+  , outboundRules :: [OutboundRule]
+  , dropletIds    :: Maybe [DropletId]
+  , tags          :: Maybe [String]
+  } deriving (Show, Generic)
+
+instance ToJSON FirewallPayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+instance Payload FirewallPayload

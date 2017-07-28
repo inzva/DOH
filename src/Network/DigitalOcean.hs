@@ -264,3 +264,5 @@ getFloatingIpActions ip = unResponse <$> get (FloatingIpActionsEndpoint ip) Noth
 
 getFloatingIpAction :: IpAddress -> ActionId -> DO Action
 getFloatingIpAction ip aId = unResponse <$> get (FloatingIpActionEndpoint ip aId) Nothing
+
+

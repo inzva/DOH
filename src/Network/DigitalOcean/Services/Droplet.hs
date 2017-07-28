@@ -43,9 +43,9 @@ data DropletStatus =
   deriving (Show, Generic)
 
 instance FromJSON DropletStatus where
-  parseJSON "new" = return New
-  parseJSON "active" = return Active
-  parseJSON "off" = return Off
+  parseJSON "new"     = return New
+  parseJSON "active"  = return Active
+  parseJSON "off"     = return Off
   parseJSON "archive" = return Archive
 
 -----------------------------------------------------------------
