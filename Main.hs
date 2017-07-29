@@ -1,9 +1,3 @@
-# DigitalOcean.hs
-Haskell bindings for DigitalOcean API v2
-
-# Getting Started
-Here is an example usage of the API:
-```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
@@ -39,13 +33,3 @@ createViaSshKeys = do
 
   -- Take snapshot of our newly created droplets
   forM_ droplets $ \dropletId -> performDropletAction dropletId (TakeSnapshot (Just "bulk snapshot"))
-```
-
-For full documentation and reference, see: http://hackage.haskell.org/package/DOH-0.1.0.0/docs/Network-DigitalOcean.html
-
-# Contributing
-What can you do?
-- You can [open an issue](https://github.com/inzva/DigitalOcean.hs/issues/new) for unexpected / needed behaviors
-- Better, you can send a Pull Request
-
-Any kind of contributions are welcome, even if it's updating docs / improving commenting / improving tests.

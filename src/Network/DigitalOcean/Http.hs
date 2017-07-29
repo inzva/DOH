@@ -36,9 +36,6 @@ type ReqWithoutPayload a = Endpoint -> Maybe QueryParams -> DO a
 
 makeRequest :: forall proxy p a. (FromJSON a, Payload p) => RequestMethod -> String -> Maybe QueryParams -> Maybe p -> DO a
 makeRequest method uri queryParams mbPayload = do
-  liftIO $ print uri
-  liftIO $ print . encode $ mbPayload
-  liftIO $ print . encode $ queryParams
   client <- ask
   let uri' = uri <> maybe mempty showQueryParams queryParams
   when (isNothing $ parseURI uri') $ throwError $ "URI cannot be parsed: " <> uri'

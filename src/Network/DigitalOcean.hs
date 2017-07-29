@@ -1,3 +1,50 @@
+{-|
+Module      : DigitalOcean
+Description : This module is where user shall interract with the whole API
+Copyright   : (c) Yiğit Özkavcı, 2017
+License     : MIT
+Maintainer  : yigitozkavci8@gmail.com
+Stability   : beta
+Portability : POSIX
+
+Every computation within this module should be assessed via `DO` monad.
+
+An example usage:
+
+@
+{&#45;\# LANGUAGE OverloadedStrings \#&#45;}
+
+module Main where
+
+import 'Network.DigitalOcean'
+import Control.Monad.Except
+import Control.Monad.Reader
+
+client :: 'Client'
+client = 'Client' \"my api key\"
+
+main :: IO ()
+main = do
+  result <- runExceptT $ (runReaderT $ \"runDO\" doActions) client
+  case result of
+    Left err -> print err
+    Right _ -> return ()
+
+createViaSshKeys :: 'DO' ()
+createViaSshKeys = do
+  -- Read a public key from a key pair and create ssh keys on DigitalOcean with it
+  pubKey <- liftIO $ readFile \"\/Users\/yigitozkavci\/.ssh\/do_api_rsa.pub\"
+  sshKey <- 'createSSHKey' ('SSHKeyPayload' \"my ssh key\" pubKey) 
+  
+  -- Create 2 droplets with our newly uploaded ssh keys
+  let dropletPayload = 'IDropletPayload' \"nyc3\" \"512mb\" \"ubuntu-14-04-x64\" (Just [sshkeyFingerprint sshKey]) Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+  droplets <- map dropletId <$\> 'createDroplets' ["droplet-1", "droplet-2"] dropletPayload
+
+  -- Take snapshot of our newly created droplets
+  forM_ droplets $ \dropletId -> 'performDropletAction' dropletId ('TakeSnapshot' (Just "bulk snapshot"))
+@
+-}
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE FlexibleContexts #-}
@@ -23,9 +70,11 @@ import           Network.DigitalOcean.Utils.Pagination
 import           Network.DigitalOcean.Services
 -----------------------------------------------------------------
 
+-- * Account
 getAccounts :: DO Account
 getAccounts = unResponse <$> get' AccountEndpoint
 
+-- * Actions
 getActions :: Maybe PaginationConfig -> DO [Action]
 getActions config = getPaginated config ActionsEndpoint Nothing
 
@@ -33,10 +82,12 @@ getAction :: ActionId -> DO Action
 getAction id' =
   unResponse <$> get' (ActionEndpoint id')
 
+-- * Regions
 getRegions :: DO [Region]
 getRegions =
   unResponse <$> get' RegionsEndpoint
 
+-- * Volumes
 getVolumes :: DO [Volume]
 getVolumes =
   unResponse <$> get' VolumesEndpoint
@@ -53,34 +104,6 @@ getVolumesByName :: String -> String -> DO [Volume]
 getVolumesByName region name =
   let queryParams = Just [("name", name), ("region", region)] in
   unResponse <$> get VolumesEndpoint queryParams
-
-data ResourceType = VolumeResource
-                  | DropletResource
-
-instance Show ResourceType where
-  show VolumeResource = "volume"
-  show DropletResource = "droplet"
-
-getSnapshots :: Maybe ResourceType -> DO [Snapshot]
-getSnapshots resourceType = do
-  let queryParams = ((:[]) . ("resource_type",) . show) <$> resourceType
-  unResponse <$> get SnapshotsEndpoint queryParams
-
-getSnapshot :: SnapshotId -> DO Snapshot
-getSnapshot id' =
-  unResponse <$> get' (SnapshotEndpoint id')
-
-deleteSnapshot :: SnapshotId -> DO ()
-deleteSnapshot id' =
-  delete' (SnapshotEndpoint id')
-
-getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
-getSnapshotsOfVolume volumeId =
-  unResponse <$> get' (VolumeSnapshotsEndpoint volumeId)
-
-createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
-createSnapshotOfVolume volumeId =
-  fmap unResponse . post (VolumeSnapshotsEndpoint volumeId) Nothing
 
 deleteVolume :: VolumeId -> DO ()
 deleteVolume id' =
@@ -113,6 +136,36 @@ getVolumeAction :: VolumeId -> ActionId -> DO Action
 getVolumeAction volumeId actionId =
   unResponse <$> get' (VolumeActionEndpoint volumeId actionId)
 
+-- * Snapshots
+data ResourceType = VolumeResource
+                  | DropletResource
+
+instance Show ResourceType where
+  show VolumeResource = "volume"
+  show DropletResource = "droplet"
+
+getSnapshots :: Maybe ResourceType -> DO [Snapshot]
+getSnapshots resourceType = do
+  let queryParams = ((:[]) . ("resource_type",) . show) <$> resourceType
+  unResponse <$> get SnapshotsEndpoint queryParams
+
+getSnapshot :: SnapshotId -> DO Snapshot
+getSnapshot id' =
+  unResponse <$> get' (SnapshotEndpoint id')
+
+deleteSnapshot :: SnapshotId -> DO ()
+deleteSnapshot id' =
+  delete' (SnapshotEndpoint id')
+
+getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
+getSnapshotsOfVolume volumeId =
+  unResponse <$> get' (VolumeSnapshotsEndpoint volumeId)
+
+createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
+createSnapshotOfVolume volumeId =
+  fmap unResponse . post (VolumeSnapshotsEndpoint volumeId) Nothing
+
+-- * Certificates
 createCertificate :: Certificatepayload -> DO Certificate
 createCertificate = fmap unResponse . post CertificatesEndpoint Nothing
 
@@ -126,6 +179,7 @@ getCertificates config = getPaginated config CertificatesEndpoint Nothing
 deleteCertificate :: CertificateId -> DO ()
 deleteCertificate id' = delete' (CertificateEndpoint id')
 
+-- * Domains
 getDomains :: DO [Domain]
 getDomains =
   unResponse <$> get' DomainsEndpoint
@@ -140,6 +194,7 @@ createDomain = fmap unResponse . post DomainsEndpoint Nothing
 deleteDomain :: DomainName -> DO ()
 deleteDomain name' = delete' (DomainEndpoint name')
 
+-- * Domain Records
 getDomainRecords :: DomainName -> DO [DomainRecord]
 getDomainRecords domainName' =
   unResponse <$> get' (DomainRecordsEndpoint domainName')
@@ -160,6 +215,7 @@ deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
 deleteDomainRecord dn' drid' =
   delete' (DomainRecordEndpoint dn' drid')
 
+-- * Images
 getImages :: Maybe PaginationConfig -> ImageOptions -> DO [Image]
 getImages config ImageOptions {..} =
   getPaginated config ImagesEndpoint (Just queryParams)
@@ -171,6 +227,9 @@ getImages config ImageOptions {..} =
 getImageActions :: ImageId -> DO [Action]
 getImageActions id' =
   unResponse <$> get' (ImageActionsEndpoint id')
+
+getImageAction :: ImageId -> ActionId -> DO Action
+getImageAction imageId actionId = unResponse <$> get' (ImageActionEndpoint imageId actionId)
 
 getImage :: ImageId -> DO [Image]
 getImage id' =
@@ -185,9 +244,14 @@ updateImage id' = fmap unResponse . put (ImageEndpoint id') Nothing
 deleteImage :: ImageId -> DO ()
 deleteImage id' = delete' (ImageEndpoint id')
 
+performImageAction :: ImageId -> ImageAction -> DO Action
+performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing 
+
+-- * Sizes
 getSizes :: DO [Size]
 getSizes = unResponse <$> get' SizesEndpoint
 
+-- * Droplets
 getDroplets :: Maybe PaginationConfig -> DO [Droplet]
 getDroplets config = getPaginated config DropletsEndpoint Nothing
 
@@ -244,6 +308,7 @@ performDropletActionOnTag tag action = do
 getDropletAction :: DropletId -> ActionId -> DO Action
 getDropletAction dropletId actionId = unResponse <$> get' (DropletActionEndpoint dropletId actionId)
 
+-- * Floating IPs
 getFloatingIps :: DO [FloatingIp]
 getFloatingIps = unResponse <$> get' FloatingIpsEndpoint
 
@@ -265,6 +330,7 @@ getFloatingIpActions ip = unResponse <$> get' (FloatingIpActionsEndpoint ip)
 getFloatingIpAction :: IpAddress -> ActionId -> DO Action
 getFloatingIpAction ip aId = unResponse <$> get' (FloatingIpActionEndpoint ip aId)
 
+-- * Firewalls
 createFirewall :: FirewallPayload -> DO Firewall
 createFirewall = fmap unResponse . post FirewallsEndpoint Nothing
 
@@ -298,12 +364,7 @@ addRulesToFirewall id' = fmap unResponse . post (FirewallRulesEndpoint id') Noth
 removeRulesFromFirewall :: FirewallId -> FirewallRulesPayload -> DO ()
 removeRulesFromFirewall id' = delete (FirewallRulesEndpoint id') Nothing
 
-performImageAction :: ImageId -> ImageAction -> DO Action
-performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing 
-
-getImageAction :: ImageId -> ActionId -> DO Action
-getImageAction imageId actionId = unResponse <$> get' (ImageActionEndpoint imageId actionId)
-
+-- * Load Balancers
 createLoadBalancer :: LoadBalancerPayload -> DO LoadBalancer
 createLoadBalancer = fmap unResponse . post LoadBalancersEndpoint Nothing
 
@@ -331,6 +392,7 @@ addForwardingRulesToLoadBalancer id' = post (LoadBalancerForwardingRulesEndpoint
 removeForwardingRulesFromLoadBalancer :: LoadBalancerId -> [ForwardingRule] -> DO ()
 removeForwardingRulesFromLoadBalancer id' = delete (LoadBalancerForwardingRulesEndpoint id') Nothing
 
+-- * SSH Keys
 getSSHKeys :: DO [SSHKey]
 getSSHKeys = unResponse <$> get' SSHKeysEndpoint
 

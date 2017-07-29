@@ -132,9 +132,6 @@ instance Arbitrary Region where
       <*> arbitrary
       <*> arbitrary
 
-instance ToJSON Region where
-  toJSON = genericToJSON $ aesonPrefix snakeCase
-
 prop_Region :: Region -> Property
 prop_Region = prop_Response (Proxy :: Proxy Region) . encode
 
