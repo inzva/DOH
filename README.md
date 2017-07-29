@@ -1,4 +1,4 @@
-# DigitalOcean.hs
+# DOH
 Complete API bindings for DigitalOcean API V2
 
 # Getting Started
