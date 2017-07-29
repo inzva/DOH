@@ -106,6 +106,8 @@ data Endpoint =
   | FirewallsEndpoint
   | LoadBalancersEndpoint
   | ForwardingRulesEndpoint
+  | KeysEndpoint
+  | SSHKeysEndpoint
   | VolumeEndpoint VolumeId
   | SnapshotEndpoint SnapshotId
   | VolumeSnapshotsEndpoint VolumeId
@@ -139,6 +141,8 @@ data Endpoint =
   | LoadBalancerEndpoint LoadBalancerId
   | LoadBalancerDropletsEndpoint LoadBalancerId
   | LoadBalancerForwardingRulesEndpoint LoadBalancerId
+  | SSHKeyEndpoint SSHKeyId
+  | SSHKeyWithFingerprintEndpoint String
 
 instance Show Endpoint where
   show AccountEndpoint                           = "account"
@@ -162,6 +166,8 @@ instance Show Endpoint where
   show FirewallsEndpoint                         = "firewalls"
   show LoadBalancersEndpoint                     = "load_balancers"
   show ForwardingRulesEndpoint                   = "forwarding_rules"
+  show KeysEndpoint                              = "keys"
+  show SSHKeysEndpoint                           = show AccountEndpoint        </> show KeysEndpoint
   show (ActionEndpoint id')                      = show ActionsEndpoint        </> show id'
   show (VolumeEndpoint id')                      = show VolumesEndpoint        </> id'
   show (SnapshotEndpoint id')                    = show SnapshotsEndpoint      </> id'
@@ -195,6 +201,8 @@ instance Show Endpoint where
   show (LoadBalancerEndpoint id')                = show FirewallsEndpoint      </> id'
   show (LoadBalancerDropletsEndpoint id')        = show FirewallsEndpoint      </> id'                    </> show DropletsEndpoint
   show (LoadBalancerForwardingRulesEndpoint id') = show FirewallsEndpoint      </> id'                    </> show ForwardingRulesEndpoint
+  show (SSHKeyEndpoint id')                      = show SSHKeysEndpoint        </> show id'
+  show (SSHKeyWithFingerprintEndpoint f)                      = show SSHKeysEndpoint        </> f
 
 type VolumeId       = String
 type ActionId       = Int
@@ -209,3 +217,4 @@ type DropletName    = String
 type IpAddress      = String
 type FirewallId     = String
 type LoadBalancerId = String
+type SSHKeyId       = Int

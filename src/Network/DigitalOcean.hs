@@ -330,3 +330,22 @@ addForwardingRulesToLoadBalancer id' = post (LoadBalancerForwardingRulesEndpoint
 
 removeForwardingRulesFromLoadBalancer :: LoadBalancerId -> [ForwardingRule] -> DO ()
 removeForwardingRulesFromLoadBalancer id' = delete (LoadBalancerForwardingRulesEndpoint id') Nothing
+
+getSSHKeys :: DO [SSHKey]
+getSSHKeys = unResponse <$> get' SSHKeysEndpoint
+
+createSSHKey :: SSHKeyPayload -> DO SSHKey
+createSSHKey = fmap unResponse . post SSHKeysEndpoint Nothing
+
+getSSHKey :: Either SSHKeyId String -> DO SSHKey
+getSSHKey idn = get' $ case idn of
+  Left id' -> SSHKeyEndpoint id'
+  Right fingerprint -> SSHKeyWithFingerprintEndpoint fingerprint
+
+updateSSHKey :: Either SSHKeyId String -> String -> DO SSHKey
+updateSSHKey idn name =
+  unResponse <$>
+    put (either SSHKeyEndpoint SSHKeyWithFingerprintEndpoint idn) Nothing (SSHKeyNamePayload name)
+
+destroySSHKey :: Either SSHKeyId String -> DO ()
+destroySSHKey = delete' . either SSHKeyEndpoint SSHKeyWithFingerprintEndpoint
