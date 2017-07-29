@@ -24,26 +24,26 @@ import           Network.DigitalOcean.Services
 -----------------------------------------------------------------
 
 getAccounts :: DO Account
-getAccounts = unResponse <$> get AccountEndpoint Nothing
+getAccounts = unResponse <$> get' AccountEndpoint
 
 getActions :: Maybe PaginationConfig -> DO [Action]
 getActions config = getPaginated config ActionsEndpoint Nothing
 
 getAction :: ActionId -> DO Action
 getAction id' =
-  unResponse <$> get (ActionEndpoint id') Nothing
+  unResponse <$> get' (ActionEndpoint id')
 
 getRegions :: DO [Region]
 getRegions =
-  unResponse <$> get RegionsEndpoint Nothing
+  unResponse <$> get' RegionsEndpoint
 
 getVolumes :: DO [Volume]
 getVolumes =
-  unResponse <$> get VolumesEndpoint Nothing
+  unResponse <$> get' VolumesEndpoint
 
 getVolume :: VolumeId -> DO Volume
 getVolume id' =
-  unResponse <$> get (VolumeEndpoint id') Nothing
+  unResponse <$> get' (VolumeEndpoint id')
 
 createVolume :: VolumePayload -> DO Volume
 createVolume =
@@ -68,15 +68,15 @@ getSnapshots resourceType = do
 
 getSnapshot :: SnapshotId -> DO Snapshot
 getSnapshot id' =
-  unResponse <$> get (SnapshotEndpoint id') Nothing
+  unResponse <$> get' (SnapshotEndpoint id')
 
 deleteSnapshot :: SnapshotId -> DO ()
 deleteSnapshot id' =
-  delete (SnapshotEndpoint id') Nothing
+  delete' (SnapshotEndpoint id')
 
 getSnapshotsOfVolume :: VolumeId -> DO [Snapshot]
 getSnapshotsOfVolume volumeId =
-  unResponse <$> get (VolumeSnapshotsEndpoint volumeId) Nothing
+  unResponse <$> get' (VolumeSnapshotsEndpoint volumeId)
 
 createSnapshotOfVolume :: VolumeId -> SnapshotPayload -> DO Snapshot
 createSnapshotOfVolume volumeId =
@@ -84,11 +84,11 @@ createSnapshotOfVolume volumeId =
 
 deleteVolume :: VolumeId -> DO ()
 deleteVolume id' =
-  delete (VolumeEndpoint id') Nothing
+  delete' (VolumeEndpoint id')
 
 deleteVolumeByName :: String -> String -> DO ()
 deleteVolumeByName region name =
-  delete VolumesEndpoint $ Just [("name", name), ("region", region)]
+  delete VolumesEndpoint (Just [("name", name), ("region", region)]) EmptyPayload
 
 performSingleVolumeAction :: VolumeId -> VolumeAction -> DO Action
 performSingleVolumeAction volumeId action =
@@ -107,42 +107,42 @@ performVolumeAction action@DetachByName {}       = performListVolumeAction actio
 
 getVolumeActions :: VolumeId -> DO [Action]
 getVolumeActions volumeId =
-  unResponse <$> get (VolumeActionsEndpoint volumeId) Nothing
+  unResponse <$> get' (VolumeActionsEndpoint volumeId)
 
 getVolumeAction :: VolumeId -> ActionId -> DO Action
 getVolumeAction volumeId actionId =
-  unResponse <$> get (VolumeActionEndpoint volumeId actionId) Nothing
+  unResponse <$> get' (VolumeActionEndpoint volumeId actionId)
 
 createCertificate :: Certificatepayload -> DO Certificate
 createCertificate = fmap unResponse . post CertificatesEndpoint Nothing
 
 getCertificate :: CertificateId -> DO Certificate
 getCertificate id' =
-  unResponse <$> get (CertificateEndpoint id') Nothing
+  unResponse <$> get' (CertificateEndpoint id')
 
 getCertificates :: Maybe PaginationConfig -> DO [Certificate]
 getCertificates config = getPaginated config CertificatesEndpoint Nothing
 
 deleteCertificate :: CertificateId -> DO ()
-deleteCertificate id' = delete (CertificateEndpoint id') Nothing
+deleteCertificate id' = delete' (CertificateEndpoint id')
 
 getDomains :: DO [Domain]
 getDomains =
-  unResponse <$> get DomainsEndpoint Nothing
+  unResponse <$> get' DomainsEndpoint
 
 getDomain :: DomainName -> DO Domain
 getDomain name' =
-  unResponse <$> get (DomainEndpoint name') Nothing
+  unResponse <$> get' (DomainEndpoint name')
 
 createDomain :: DomainPayload -> DO Domain
 createDomain = fmap unResponse . post DomainsEndpoint Nothing
 
 deleteDomain :: DomainName -> DO ()
-deleteDomain name' = delete (DomainEndpoint name') Nothing
+deleteDomain name' = delete' (DomainEndpoint name')
 
 getDomainRecords :: DomainName -> DO [DomainRecord]
 getDomainRecords domainName' =
-  unResponse <$> get (DomainRecordsEndpoint domainName') Nothing
+  unResponse <$> get' (DomainRecordsEndpoint domainName')
 
 createDomainRecord :: DomainName -> DomainRecordPayload -> DO DomainRecord
 createDomainRecord domainName' =
@@ -150,7 +150,7 @@ createDomainRecord domainName' =
 
 getDomainRecord :: DomainName -> DomainRecordId -> DO DomainRecord
 getDomainRecord dn' drid' =
-  unResponse <$> get (DomainRecordEndpoint dn' drid') Nothing
+  unResponse <$> get' (DomainRecordEndpoint dn' drid')
 
 updateDomainRecord :: DomainName -> DomainRecordId -> DomainRecordPayload -> DO DomainRecord
 updateDomainRecord dn' drid' =
@@ -158,7 +158,7 @@ updateDomainRecord dn' drid' =
 
 deleteDomainRecord :: DomainName -> DomainRecordId -> DO ()
 deleteDomainRecord dn' drid' =
-  delete (DomainRecordEndpoint dn' drid') Nothing
+  delete' (DomainRecordEndpoint dn' drid')
 
 getImages :: Maybe PaginationConfig -> ImageOptions -> DO [Image]
 getImages config ImageOptions {..} =
@@ -170,23 +170,23 @@ getImages config ImageOptions {..} =
 
 getImageActions :: ImageId -> DO [Action]
 getImageActions id' =
-  unResponse <$> get (ImageActionsEndpoint id') Nothing
+  unResponse <$> get' (ImageActionsEndpoint id')
 
 getImage :: ImageId -> DO [Image]
 getImage id' =
-  unResponse <$> get (ImageEndpoint id') Nothing
+  unResponse <$> get' (ImageEndpoint id')
 
 getImageBySlug :: String -> DO [Image]
-getImageBySlug slug = unResponse <$> get (ImageBySlugEndpoint slug) Nothing
+getImageBySlug slug = unResponse <$> get' (ImageBySlugEndpoint slug)
 
 updateImage :: ImageId -> ImagePayload -> DO Image
 updateImage id' = fmap unResponse . put (ImageEndpoint id') Nothing
 
 deleteImage :: ImageId -> DO ()
-deleteImage id' = delete (ImageEndpoint id') Nothing
+deleteImage id' = delete' (ImageEndpoint id')
 
 getSizes :: DO [Size]
-getSizes = unResponse <$> get SizesEndpoint Nothing
+getSizes = unResponse <$> get' SizesEndpoint
 
 getDroplets :: Maybe PaginationConfig -> DO [Droplet]
 getDroplets config = getPaginated config DropletsEndpoint Nothing
@@ -198,34 +198,34 @@ createDroplets :: [DropletName] -> IDropletPayload -> DO [Droplet]
 createDroplets names payload = unResponse <$> post DropletsEndpoint Nothing (MultipleDropletPayload names payload)
 
 getDroplet :: DropletId -> DO Droplet
-getDroplet id' = unResponse <$> get (DropletEndpoint id') Nothing
+getDroplet id' = unResponse <$> get' (DropletEndpoint id')
 
 getDropletsByTag :: String -> DO [Droplet]
 getDropletsByTag tag = unResponse <$> get DropletsEndpoint (Just [("tag_name", tag)])
 
 getDropletKernels :: DropletId -> DO [Kernel]
-getDropletKernels id' = unResponse <$> get (DropletKernelsEndpoint id') Nothing
+getDropletKernels id' = unResponse <$> get' (DropletKernelsEndpoint id')
 
 getDropletSnapshots :: DropletId -> DO [Snapshot]
-getDropletSnapshots id' = unResponse <$> get (DropletSnapshotsEndpoint id') Nothing
+getDropletSnapshots id' = unResponse <$> get' (DropletSnapshotsEndpoint id')
 
 getDropletBackups :: DropletId -> DO [Backup]
-getDropletBackups id' = unResponse <$> get (DropletBackupsEndpoint id') Nothing
+getDropletBackups id' = unResponse <$> get' (DropletBackupsEndpoint id')
 
 getDropletActions :: DropletId -> DO [Action]
-getDropletActions id' = unResponse <$> get (DropletActionsEndpoint id') Nothing
+getDropletActions id' = unResponse <$> get' (DropletActionsEndpoint id')
 
 deleteDroplet :: DropletId -> DO ()
-deleteDroplet id' = delete (DropletEndpoint id') Nothing
+deleteDroplet id' = delete' (DropletEndpoint id')
 
 deleteDropletByTag :: String -> DO ()
-deleteDropletByTag tag = delete DropletsEndpoint $ Just [("tag_name", tag)]
+deleteDropletByTag tag = delete DropletsEndpoint (Just [("tag_name", tag)]) EmptyPayload
 
 getDropletNeighbors :: DropletId -> DO [Droplet]
-getDropletNeighbors id' = unResponse <$> get (DropletNeighborsEndpoint id') Nothing
+getDropletNeighbors id' = unResponse <$> get' (DropletNeighborsEndpoint id')
 
 getNeighbors :: DO Neighbors
-getNeighbors = unResponse <$> get DropletsNeighborsEndpoint Nothing
+getNeighbors = unResponse <$> get' DropletsNeighborsEndpoint
 
 performDropletAction :: DropletId -> DropletAction -> DO Action
 performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') Nothing 
@@ -242,27 +242,48 @@ performDropletActionOnTag tag action = do
   unResponse <$> post DropletsActionsEndpoint (Just [("tag_name", tag)]) action
 
 getDropletAction :: DropletId -> ActionId -> DO Action
-getDropletAction dropletId actionId = unResponse <$> get (DropletActionEndpoint dropletId actionId) Nothing
+getDropletAction dropletId actionId = unResponse <$> get' (DropletActionEndpoint dropletId actionId)
 
 getFloatingIps :: DO [FloatingIp]
-getFloatingIps = unResponse <$> get FloatingIpsEndpoint Nothing
+getFloatingIps = unResponse <$> get' FloatingIpsEndpoint
 
 createFloatingIp :: FloatingIpPayload -> DO FloatingIp
 createFloatingIp = fmap unResponse . post FloatingIpsEndpoint Nothing
 
 getFloatingIp :: IpAddress -> DO FloatingIp
-getFloatingIp ip = unResponse <$> get (FloatingIpEndpoint ip) Nothing
+getFloatingIp ip = unResponse <$> get' (FloatingIpEndpoint ip)
 
 deleteFloatingIp :: IpAddress -> DO ()
-deleteFloatingIp ip = delete (FloatingIpEndpoint ip) Nothing
+deleteFloatingIp ip = delete' (FloatingIpEndpoint ip)
 
 performFloatingIpAction :: IpAddress -> FloatingIpAction -> DO Action
 performFloatingIpAction ip = fmap unResponse . post (FloatingIpActionsEndpoint ip) Nothing
 
 getFloatingIpActions :: IpAddress -> DO [Action]
-getFloatingIpActions ip = unResponse <$> get (FloatingIpActionsEndpoint ip) Nothing
+getFloatingIpActions ip = unResponse <$> get' (FloatingIpActionsEndpoint ip)
 
 getFloatingIpAction :: IpAddress -> ActionId -> DO Action
-getFloatingIpAction ip aId = unResponse <$> get (FloatingIpActionEndpoint ip aId) Nothing
+getFloatingIpAction ip aId = unResponse <$> get' (FloatingIpActionEndpoint ip aId)
+
+createFirewall :: FirewallPayload -> DO Firewall
+createFirewall = fmap unResponse . post FirewallsEndpoint Nothing
+
+getFirewall :: FirewallId -> DO Firewall
+getFirewall id' = unResponse <$> get' (FirewallEndpoint id')
+
+getFirewalls :: DO [Firewall]
+getFirewalls = unResponse <$> get' FirewallsEndpoint
+
+updateFirewall :: FirewallId -> FirewallPayload -> DO Firewall
+updateFirewall id' = fmap unResponse . put (FirewallEndpoint id') Nothing
+
+deleteFirewall :: FirewallId -> DO ()
+deleteFirewall id' = delete' (FirewallEndpoint id')
+
+addDropletsToFirewall :: FirewallId -> DropletsPayload -> DO ()
+addDropletsToFirewall id' = fmap unResponse . post (FirewallDropletsEndpoint id') Nothing
+
+removeDropletsFromFirewall :: FirewallId -> DropletsPayload -> DO ()
+removeDropletsFromFirewall id' = delete (FirewallDropletsEndpoint id') Nothing
 
 

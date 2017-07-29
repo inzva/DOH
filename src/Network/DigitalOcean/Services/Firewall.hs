@@ -115,14 +115,25 @@ instance Paginatable Firewall
 -----------------------------------------------------------------
 
 data FirewallPayload = FirewallPayload
-  { name          :: String
-  , inboundRules  :: [InboundRule]
-  , outboundRules :: [OutboundRule]
-  , dropletIds    :: Maybe [DropletId]
-  , tags          :: Maybe [String]
+  { firewallpayloadName          :: String
+  , firewallpayloadInboundRules  :: [InboundRule]
+  , firewallpayloadOutboundRules :: [OutboundRule]
+  , firewallpayloadDropletIds    :: Maybe [DropletId]
+  , firewallpayloadTags          :: Maybe [String]
   } deriving (Show, Generic)
 
 instance ToJSON FirewallPayload where
   toJSON = genericToJSON $ aesonPrefix snakeCase
 
 instance Payload FirewallPayload
+
+-----------------------------------------------------------------
+
+data DropletsPayload = DropletsPayload
+  { dropletspayloadDropletIds :: [DropletId]
+  } deriving (Show, Generic)
+
+instance ToJSON DropletsPayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+instance Payload DropletsPayload

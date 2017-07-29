@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Network.DigitalOcean.Http where
   
@@ -31,6 +31,9 @@ import           Network.DigitalOcean.Utils.Pagination
 baseURI :: String
 baseURI = "https://api.digitalocean.com/v2"
 
+type ReqWithPayload a = forall p. (Payload p) => Endpoint -> Maybe QueryParams -> p -> DO a
+type ReqWithoutPayload a = Endpoint -> Maybe QueryParams -> DO a
+
 makeRequest :: forall proxy p a. (FromJSON a, Payload p) => RequestMethod -> String -> Maybe QueryParams -> Maybe p -> DO a
 makeRequest method uri queryParams mbPayload = do
   liftIO $ print uri
@@ -55,35 +58,33 @@ makeRequest method uri queryParams mbPayload = do
     Left err -> throwError $ "Error occured for response body:" <> BSC.unpack (LBS.toStrict $ responseBody response) <> err
     Right resource -> return resource
 
-get' :: forall a. FromJSON a => String -> Maybe QueryParams -> DO a
-get' uri queryParams = makeRequest Get uri queryParams (Just EmptyPayload)
+{- `get` that is working with absolute uris -}
+getA :: forall a. FromJSON a => String -> Maybe QueryParams -> DO a
+getA uri queryParams = makeRequest Get uri queryParams (Just EmptyPayload)
 
-get :: forall a. (FromJSON a) => Endpoint -> Maybe QueryParams -> DO a
-get endp = get' (baseURI </> show endp)
+get :: FromJSON a => ReqWithoutPayload a
+get endp = getA (baseURI </> show endp)
 
-post' :: forall proxy a p. (FromJSON a, Payload p) => String -> Maybe QueryParams -> p -> DO a
-post' uri queryParams payload = makeRequest Post uri queryParams (Just payload)
+get' :: FromJSON a => Endpoint -> DO a
+get' endp = get endp Nothing
 
-post :: forall a p. (FromJSON a, Payload p) => Endpoint -> Maybe QueryParams -> p -> DO a
-post endp = post' (baseURI </> show endp)
+post :: forall a. (FromJSON a) => ReqWithPayload a
+post endp q' payload = makeRequest Post (baseURI </> show endp) q' (Just payload)
 
-delete' :: String -> Maybe QueryParams -> DO ()
-delete' uri queryParams = makeRequest Delete uri queryParams (Just EmptyPayload)
+delete :: ReqWithPayload ()
+delete endp q' payload = makeRequest Delete (baseURI </> show endp) q' (Just payload)
 
-delete :: Endpoint -> Maybe QueryParams -> DO ()
-delete endp = delete' (baseURI </> show endp)
+delete' :: Endpoint -> DO ()
+delete' endp = delete endp Nothing EmptyPayload
 
-put' :: forall a p. (FromJSON a, Payload p) => String -> Maybe QueryParams -> p -> DO a
-put' uri queryParams payload = makeRequest Put uri queryParams (Just payload)
+put :: forall a. (FromJSON a) => ReqWithPayload a
+put endp q' payload = makeRequest Put (baseURI </> show endp) q' (Just payload)
 
-put :: forall a p. (FromJSON a, Payload p) => Endpoint -> Maybe QueryParams -> p -> DO a
-put endp = put' (baseURI </> show endp)
-
-getPaginated :: forall a. Paginatable a => Maybe PaginationConfig -> Endpoint -> Maybe QueryParams -> DO [a]
+getPaginated :: forall a. Paginatable a => Maybe PaginationConfig -> ReqWithoutPayload [a]
 getPaginated config endp q' = do
   let queryParams = paginationQueryParams config ++
                     fromMaybe [] q'
   pagination <- get endp (Just queryParams)
-  curr <$> paginateUntil (fromMaybe defaultPaginationConfig config) pagination (\url -> get' (addPaginationParam url) Nothing)
+  curr <$> paginateUntil (fromMaybe defaultPaginationConfig config) pagination (\url -> getA (addPaginationParam url) Nothing)
   where
     addPaginationParam = (<> maybe mempty (<> "&page_size=") (show . pageSize <$> config))
