@@ -116,6 +116,7 @@ data Endpoint =
   | DomainRecordsEndpoint DomainName
   | DomainRecordEndpoint DomainName DomainRecordId
   | ImageActionsEndpoint ImageId
+  | ImageActionEndpoint ImageId ActionId
   | ImageEndpoint ImageId
   | ImageBySlugEndpoint String
   | DropletEndpoint DropletId
@@ -166,6 +167,7 @@ instance Show Endpoint where
   show (DomainRecordsEndpoint name')         = show (DomainEndpoint name') </> show RecordsEndpoint
   show (DomainRecordEndpoint d' dr')         = show (DomainEndpoint d')    </> show RecordsEndpoint   </> show dr'
   show (ImageActionsEndpoint id')            = show ImagesEndpoint         </> show id'               </> show ActionsEndpoint
+  show (ImageActionEndpoint iId aId)         = show ImagesEndpoint         </> show iId               </> show ActionsEndpoint   </> show aId
   show (ImageEndpoint id')                   = show ImagesEndpoint         </> show id'
   show (ImageBySlugEndpoint name')           = show ImagesEndpoint         </> name'
   show (DropletEndpoint id')                 = show DropletsEndpoint       </> show id'

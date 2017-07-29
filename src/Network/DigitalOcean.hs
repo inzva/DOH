@@ -297,3 +297,9 @@ addRulesToFirewall id' = fmap unResponse . post (FirewallRulesEndpoint id') Noth
 
 removeRulesFromFirewall :: FirewallId -> FirewallRulesPayload -> DO ()
 removeRulesFromFirewall id' = delete (FirewallRulesEndpoint id') Nothing
+
+performImageAction :: ImageId -> ImageAction -> DO Action
+performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing 
+
+getImageAction :: ImageId -> ActionId -> DO Action
+getImageAction imageId actionId = get' (ImageActionEndpoint imageId actionId)

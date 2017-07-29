@@ -12,7 +12,7 @@ import        GHC.Generics
 -----------------------------------------------------------------
 import        Network.DigitalOcean.Types
 import        Network.DigitalOcean.Utils.Pagination
-import        Network.DigitalOcean.Services.Action
+import        Network.DigitalOcean.Utils.Actions
 -----------------------------------------------------------------
 
 data Image = Image
@@ -65,3 +65,13 @@ instance Payload ImagePayload
 
 instance ToJSON ImagePayload where
   toJSON = genericToJSON $ aesonPrefix snakeCase
+
+data ImageAction =
+    Transfer
+  | ConvertToSnapshot
+
+instance ToJSON ImageAction where
+  toJSON Transfer = object [ actionType' "transfer" ]
+  toJSON ConvertToSnapshot = object [ actionType' "convert" ]
+
+instance Payload ImageAction
