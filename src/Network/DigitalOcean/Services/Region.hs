@@ -26,3 +26,6 @@ instance FromJSON (Response [Region]) where
 
 instance FromJSON Region where
   parseJSON = genericParseJSON $ aesonPrefix snakeCase
+
+instance ToJSON Region where
+  toJSON = genericToJSON $ aesonPrefix snakeCase

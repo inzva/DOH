@@ -104,6 +104,8 @@ data Endpoint =
   | TagsEndpoint
   | RulesEndpoint
   | FirewallsEndpoint
+  | LoadBalancersEndpoint
+  | ForwardingRulesEndpoint
   | VolumeEndpoint VolumeId
   | SnapshotEndpoint SnapshotId
   | VolumeSnapshotsEndpoint VolumeId
@@ -134,57 +136,65 @@ data Endpoint =
   | FirewallDropletsEndpoint FirewallId
   | FirewallTagsEndpoint FirewallId
   | FirewallRulesEndpoint FirewallId
+  | LoadBalancerEndpoint LoadBalancerId
+  | LoadBalancerDropletsEndpoint LoadBalancerId
+  | LoadBalancerForwardingRulesEndpoint LoadBalancerId
 
 instance Show Endpoint where
-  show AccountEndpoint                       = "account"
-  show ActionsEndpoint                       = "actions"
-  show RegionsEndpoint                       = "regions"
-  show VolumesEndpoint                       = "volumes"
-  show SnapshotsEndpoint                     = "snapshots"
-  show CertificatesEndpoint                  = "certificates"
-  show DomainsEndpoint                       = "domains"
-  show ImagesEndpoint                        = "images"
-  show SizesEndpoint                         = "sizes"
-  show DropletsEndpoint                      = "droplets"
-  show RecordsEndpoint                       = "records"
-  show KernelsEndpoint                       = "kernels"
-  show BackupsEndpoint                       = "backups"
-  show NeighborsEndpoint                     = "neighbors"
-  show DropletsNeighborsEndpoint             = "reports/droplet_neighbors"
-  show FloatingIpsEndpoint                   = "floating_ips"
-  show TagsEndpoint                          = "tags"
-  show RulesEndpoint                         = "rules"
-  show FirewallsEndpoint                     = "firewalls"
-  show (ActionEndpoint id')                  = show ActionsEndpoint        </> show id'
-  show (VolumeEndpoint id')                  = show VolumesEndpoint        </> id'
-  show (SnapshotEndpoint id')                = show SnapshotsEndpoint      </> id'
-  show (VolumeSnapshotsEndpoint id')         = show VolumesEndpoint        </> id'                    </> show SnapshotsEndpoint
-  show VolumesActionsEndpoint                = show VolumesEndpoint        </> show SnapshotsEndpoint
-  show (VolumeActionsEndpoint vId)           = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint
-  show (VolumeActionEndpoint vId aId)        = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint   </> show aId
-  show (CertificateEndpoint id')             = show CertificatesEndpoint   </> id'
-  show (DomainEndpoint name')                = show DomainsEndpoint        </> name'
-  show (DomainRecordsEndpoint name')         = show (DomainEndpoint name') </> show RecordsEndpoint
-  show (DomainRecordEndpoint d' dr')         = show (DomainEndpoint d')    </> show RecordsEndpoint   </> show dr'
-  show (ImageActionsEndpoint id')            = show ImagesEndpoint         </> show id'               </> show ActionsEndpoint
-  show (ImageActionEndpoint iId aId)         = show ImagesEndpoint         </> show iId               </> show ActionsEndpoint   </> show aId
-  show (ImageEndpoint id')                   = show ImagesEndpoint         </> show id'
-  show (ImageBySlugEndpoint name')           = show ImagesEndpoint         </> name'
-  show (DropletEndpoint id')                 = show DropletsEndpoint       </> show id'
-  show (DropletKernelsEndpoint id')          = show DropletsEndpoint       </> show id'               </> show KernelsEndpoint
-  show (DropletSnapshotsEndpoint id')        = show DropletsEndpoint       </> show id'               </> show SnapshotsEndpoint
-  show (DropletBackupsEndpoint id')          = show DropletsEndpoint       </> show id'               </> show BackupsEndpoint
-  show (DropletActionsEndpoint id')          = show DropletsEndpoint       </> show id'               </> show ActionsEndpoint
-  show (DropletNeighborsEndpoint id')        = show DropletsEndpoint       </> show id'               </> show NeighborsEndpoint
-  show DropletsActionsEndpoint               = show DropletsEndpoint       </> show ActionsEndpoint
-  show (DropletActionEndpoint dId aId)       = show DropletsEndpoint       </> show dId               </> show ActionsEndpoint   </> show aId
-  show (FloatingIpEndpoint ipAddr)           = show FloatingIpsEndpoint    </> ipAddr
-  show (FloatingIpActionsEndpoint ipAddr)    = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint
-  show (FloatingIpActionEndpoint ipAddr aId) = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint   </> show aId
-  show (FirewallEndpoint id')                = show FirewallsEndpoint      </> id'
-  show (FirewallDropletsEndpoint id')        = show FirewallsEndpoint      </> id'                    </> show DropletsEndpoint
-  show (FirewallTagsEndpoint id')            = show FirewallsEndpoint      </> id'                    </> show TagsEndpoint
-  show (FirewallRulesEndpoint id')           = show FirewallsEndpoint      </> id'                    </> show RulesEndpoint
+  show AccountEndpoint                           = "account"
+  show ActionsEndpoint                           = "actions"
+  show RegionsEndpoint                           = "regions"
+  show VolumesEndpoint                           = "volumes"
+  show SnapshotsEndpoint                         = "snapshots"
+  show CertificatesEndpoint                      = "certificates"
+  show DomainsEndpoint                           = "domains"
+  show ImagesEndpoint                            = "images"
+  show SizesEndpoint                             = "sizes"
+  show DropletsEndpoint                          = "droplets"
+  show RecordsEndpoint                           = "records"
+  show KernelsEndpoint                           = "kernels"
+  show BackupsEndpoint                           = "backups"
+  show NeighborsEndpoint                         = "neighbors"
+  show DropletsNeighborsEndpoint                 = "reports/droplet_neighbors"
+  show FloatingIpsEndpoint                       = "floating_ips"
+  show TagsEndpoint                              = "tags"
+  show RulesEndpoint                             = "rules"
+  show FirewallsEndpoint                         = "firewalls"
+  show LoadBalancersEndpoint                     = "load_balancers"
+  show ForwardingRulesEndpoint                   = "forwarding_rules"
+  show (ActionEndpoint id')                      = show ActionsEndpoint        </> show id'
+  show (VolumeEndpoint id')                      = show VolumesEndpoint        </> id'
+  show (SnapshotEndpoint id')                    = show SnapshotsEndpoint      </> id'
+  show (VolumeSnapshotsEndpoint id')             = show VolumesEndpoint        </> id'                    </> show SnapshotsEndpoint
+  show VolumesActionsEndpoint                    = show VolumesEndpoint        </> show SnapshotsEndpoint
+  show (VolumeActionsEndpoint vId)               = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint
+  show (VolumeActionEndpoint vId aId)            = show VolumesEndpoint        </> vId                    </> show ActionsEndpoint   </> show aId
+  show (CertificateEndpoint id')                 = show CertificatesEndpoint   </> id'
+  show (DomainEndpoint name')                    = show DomainsEndpoint        </> name'
+  show (DomainRecordsEndpoint name')             = show (DomainEndpoint name') </> show RecordsEndpoint
+  show (DomainRecordEndpoint d' dr')             = show (DomainEndpoint d')    </> show RecordsEndpoint   </> show dr'
+  show (ImageActionsEndpoint id')                = show ImagesEndpoint         </> show id'               </> show ActionsEndpoint
+  show (ImageActionEndpoint iId aId)             = show ImagesEndpoint         </> show iId               </> show ActionsEndpoint   </> show aId
+  show (ImageEndpoint id')                       = show ImagesEndpoint         </> show id'
+  show (ImageBySlugEndpoint name')               = show ImagesEndpoint         </> name'
+  show (DropletEndpoint id')                     = show DropletsEndpoint       </> show id'
+  show (DropletKernelsEndpoint id')              = show DropletsEndpoint       </> show id'               </> show KernelsEndpoint
+  show (DropletSnapshotsEndpoint id')            = show DropletsEndpoint       </> show id'               </> show SnapshotsEndpoint
+  show (DropletBackupsEndpoint id')              = show DropletsEndpoint       </> show id'               </> show BackupsEndpoint
+  show (DropletActionsEndpoint id')              = show DropletsEndpoint       </> show id'               </> show ActionsEndpoint
+  show (DropletNeighborsEndpoint id')            = show DropletsEndpoint       </> show id'               </> show NeighborsEndpoint
+  show DropletsActionsEndpoint                   = show DropletsEndpoint       </> show ActionsEndpoint
+  show (DropletActionEndpoint dId aId)           = show DropletsEndpoint       </> show dId               </> show ActionsEndpoint   </> show aId
+  show (FloatingIpEndpoint ipAddr)               = show FloatingIpsEndpoint    </> ipAddr
+  show (FloatingIpActionsEndpoint ipAddr)        = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint
+  show (FloatingIpActionEndpoint ipAddr aId)     = show FloatingIpsEndpoint    </> ipAddr                 </> show ActionsEndpoint   </> show aId
+  show (FirewallEndpoint id')                    = show FirewallsEndpoint      </> id'
+  show (FirewallDropletsEndpoint id')            = show FirewallsEndpoint      </> id'                    </> show DropletsEndpoint
+  show (FirewallTagsEndpoint id')                = show FirewallsEndpoint      </> id'                    </> show TagsEndpoint
+  show (FirewallRulesEndpoint id')               = show FirewallsEndpoint      </> id'                    </> show RulesEndpoint
+  show (LoadBalancerEndpoint id')                = show FirewallsEndpoint      </> id'
+  show (LoadBalancerDropletsEndpoint id')        = show FirewallsEndpoint      </> id'                    </> show DropletsEndpoint
+  show (LoadBalancerForwardingRulesEndpoint id') = show FirewallsEndpoint      </> id'                    </> show ForwardingRulesEndpoint
 
 type VolumeId       = String
 type ActionId       = Int
@@ -198,3 +208,4 @@ type ImageId        = Int
 type DropletName    = String
 type IpAddress      = String
 type FirewallId     = String
+type LoadBalancerId = String

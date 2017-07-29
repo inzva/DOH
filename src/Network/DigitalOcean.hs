@@ -302,4 +302,31 @@ performImageAction :: ImageId -> ImageAction -> DO Action
 performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing 
 
 getImageAction :: ImageId -> ActionId -> DO Action
-getImageAction imageId actionId = get' (ImageActionEndpoint imageId actionId)
+getImageAction imageId actionId = unResponse <$> get' (ImageActionEndpoint imageId actionId)
+
+createLoadBalancer :: LoadBalancerPayload -> DO LoadBalancer
+createLoadBalancer = fmap unResponse . post LoadBalancersEndpoint Nothing
+
+getLoadBalancer :: LoadBalancerId -> DO LoadBalancer
+getLoadBalancer id' = unResponse <$> get' (LoadBalancerEndpoint id')
+
+getLoadBalancers :: DO [LoadBalancer]
+getLoadBalancers = unResponse <$> get' LoadBalancersEndpoint
+
+updateLoadBalancer :: LoadBalancerPayload -> DO LoadBalancer
+updateLoadBalancer = fmap unResponse . put LoadBalancersEndpoint Nothing
+
+deleteLoadBalancer :: LoadBalancerId -> DO ()
+deleteLoadBalancer id' = delete' (LoadBalancerEndpoint id')
+
+addDropletsToLoadBalancer :: LoadBalancerId -> DropletsPayload -> DO ()
+addDropletsToLoadBalancer id' = post (LoadBalancerDropletsEndpoint id') Nothing
+
+removeDropletsFromLoadBalancer :: LoadBalancerId -> DropletsPayload -> DO ()
+removeDropletsFromLoadBalancer id' = delete (LoadBalancerDropletsEndpoint id') Nothing
+
+addForwardingRulesToLoadBalancer :: LoadBalancerId -> [ForwardingRule] -> DO ()
+addForwardingRulesToLoadBalancer id' = post (LoadBalancerForwardingRulesEndpoint id') Nothing
+
+removeForwardingRulesFromLoadBalancer :: LoadBalancerId -> [ForwardingRule] -> DO ()
+removeForwardingRulesFromLoadBalancer id' = delete (LoadBalancerForwardingRulesEndpoint id') Nothing
