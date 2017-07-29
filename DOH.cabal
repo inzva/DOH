@@ -3,8 +3,8 @@
 
 name:                DOH
 version:             0.1.0.0
-synopsis:            A complete API wrapper for DigitalOcean API V2
-description:         A complete API wrapper for DigitalOcean API V2
+synopsis:            Complete API bindings for DigitalOcean API V2
+description:         Complete API bindings for DigitalOcean API V2
                      .
                      To get started, see @Network.DigitalOcean@ module below.
 license:             MIT
@@ -18,7 +18,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 source-repository head
   type: git
-  location: https://github.com/inzva/DigitalOcean.hs
+  location: https://github.com/inzva/DOH
 library
   exposed-modules:     Network.DigitalOcean
                        Network.DigitalOcean.Http,

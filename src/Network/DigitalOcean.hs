@@ -1,6 +1,7 @@
 {-|
 Module      : DigitalOcean
-Description : This module is where user shall interract with the whole API
+Description : Complete API bindings for DigitalOcean API V2
+
 Copyright   : (c) Yiğit Özkavcı, 2017
 License     : MIT
 Maintainer  : yigitozkavci8@gmail.com

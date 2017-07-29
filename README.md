@@ -1,5 +1,5 @@
 # DigitalOcean.hs
-Haskell bindings for DigitalOcean API v2
+Complete API bindings for DigitalOcean API V2
 
 # Getting Started
 Here is an example usage of the API:
