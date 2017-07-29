@@ -137,3 +137,26 @@ instance ToJSON DropletsPayload where
   toJSON = genericToJSON $ aesonPrefix snakeCase
 
 instance Payload DropletsPayload
+
+-----------------------------------------------------------------
+
+data TagsPayload = TagsPayload
+  { tagspayloadTags :: [DropletId]
+  } deriving (Show, Generic)
+
+instance ToJSON TagsPayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+instance Payload TagsPayload
+
+-----------------------------------------------------------------
+
+data FirewallRulesPayload = FirewallRulesPayload
+  { inboundRules :: [InboundRule]
+  , outboundRules :: [OutboundRule]
+  } deriving (Show, Generic)
+
+instance ToJSON FirewallRulesPayload where
+  toJSON = genericToJSON $ aesonPrefix snakeCase
+
+instance Payload FirewallRulesPayload

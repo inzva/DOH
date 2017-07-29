@@ -286,4 +286,14 @@ addDropletsToFirewall id' = fmap unResponse . post (FirewallDropletsEndpoint id'
 removeDropletsFromFirewall :: FirewallId -> DropletsPayload -> DO ()
 removeDropletsFromFirewall id' = delete (FirewallDropletsEndpoint id') Nothing
 
+addTagsToFirewall :: FirewallId -> TagsPayload -> DO ()
+addTagsToFirewall id' = fmap unResponse . post (FirewallTagsEndpoint id') Nothing
 
+removeTagsFromFirewall :: FirewallId -> TagsPayload -> DO ()
+removeTagsFromFirewall id' = delete (FirewallTagsEndpoint id') Nothing
+
+addRulesToFirewall :: FirewallId -> FirewallRulesPayload -> DO ()
+addRulesToFirewall id' = fmap unResponse . post (FirewallRulesEndpoint id') Nothing
+
+removeRulesFromFirewall :: FirewallId -> FirewallRulesPayload -> DO ()
+removeRulesFromFirewall id' = delete (FirewallRulesEndpoint id') Nothing
