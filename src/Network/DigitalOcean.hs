@@ -17,7 +17,7 @@ An example usage:
 
 module Main where
 
-import 'Network.DigitalOcean'
+import Network.DigitalOcean
 import Control.Monad.Except
 import Control.Monad.Reader
 
@@ -38,7 +38,7 @@ createViaSshKeys = do
   sshKey <- 'createSSHKey' ('SSHKeyPayload' \"my ssh key\" pubKey) 
   
   -- Create 2 droplets with our newly uploaded ssh keys
-  let dropletPayload = 'IDropletPayload' \"nyc3\" \"512mb\" \"ubuntu-14-04-x64\" (Just [sshkeyFingerprint sshKey]) Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+  let dropletPayload = 'IDropletPayload' \"nyc3\" \"512mb\" 'Ubuntu1404x64' (Just [sshkeyFingerprint sshKey]) Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   droplets <- map dropletId <$\> 'createDroplets' ["droplet-1", "droplet-2"] dropletPayload
 
   -- Take snapshot of our newly created droplets

@@ -143,7 +143,7 @@ data DropletPayload =
 data IDropletPayload = IDropletPayload
   { dropletpayloadRegion            :: String
   , dropletpayloadSize              :: String
-  , dropletpayloadImage             :: String -- ^ number (if using an image ID), or String (if using a public image slug)
+  , dropletpayloadImage             :: PublicImage -- ^ number (if using an image ID), or String (if using a public image slug)
   , dropletpayloadSshKeys           :: Maybe [String]
   , dropletpayloadBackups           :: Maybe Bool
   , dropletpayloadIpv6              :: Maybe Bool
