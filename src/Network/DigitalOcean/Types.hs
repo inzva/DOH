@@ -65,12 +65,25 @@ data PaginationConfig = PaginationConfig
 defaultPaginationConfig :: PaginationConfig
 defaultPaginationConfig = PaginationConfig 25 100
 
-newtype DO a = DO { runDO :: ReaderT Client (ExceptT String IO) a }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadError String, MonadReader Client)
+newtype DO a = DO { runDO :: ReaderT Client (ExceptT DoErr IO) a }
+  deriving (Functor, Applicative, Monad, MonadIO, MonadError DoErr, MonadReader Client)
 
 newtype Client = Client { apiKey :: BS.ByteString }
 
-type DoErr = T.Text
+data DoErrType =
+    HttpError
+  | JSONConversionError
+  | InternalError
+  | ActionNotAllowed
+  | AuthenticationError
+  | UnknownError
+  deriving Show
+
+data DoErr = DoErr
+  { errType :: DoErrType
+  , errTitle :: T.Text
+  , errBody :: T.Text
+  } deriving Show
 
 newtype Response a = Response { unResponse :: a } deriving (Generic, Show)
 

@@ -64,6 +64,7 @@ import           Control.Monad.Reader
 import           Control.Monad.Except
 import           Data.Bool                 (bool)
 import qualified Data.Set                  as Set
+import qualified Data.Text                 as T
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
 import           Network.DigitalOcean.Http
@@ -300,10 +301,11 @@ performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') N
  -}
 performDropletActionOnTag :: String -> DropletAction -> DO [Action]
 performDropletActionOnTag tag action = do
-  unless (actionAllowedAsBulk action) $
-    throwError $
-      "Action " ++ show action ++ " not allowed as bulk. See \
-      \https://developers.digitalocean.com/documentation/v2/#acting-on-tagged-droplets"
+  unless (actionAllowedAsBulk action) $ throwError
+    DoErr { errType  = ActionNotAllowed
+          , errTitle = T.pack $ "Action " <> show action <> " not allowed as bulk"
+          , errBody  = "See https://developers.digitalocean.com/documentation/v2/#acting-on-tagged-droplets"
+          }
   unResponse <$> post DropletsActionsEndpoint (Just [("tag_name", tag)]) action
 
 getDropletAction :: DropletId -> ActionId -> DO Action

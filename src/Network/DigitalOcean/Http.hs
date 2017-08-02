@@ -6,22 +6,23 @@
 module Network.DigitalOcean.Http where
   
 -----------------------------------------------------------------
-import qualified Data.Text                 as T
-import qualified Data.ByteString           as BS
-import qualified Data.ByteString.Char8     as BSC
-import qualified Data.ByteString.Lazy      as LBS
-import           Network.HTTP.Client       hiding (Proxy)
+import qualified Data.Text                  as T
+import qualified Data.ByteString            as BS
+import qualified Data.ByteString.Char8      as BSC
+import qualified Data.ByteString.Lazy       as LBS
+import qualified Data.ByteString.Lazy.Char8 as LBSC
+import           Network.HTTP.Client        hiding (Proxy)
 import           Network.HTTP.Client.TLS
-import           System.FilePath           ((</>))
+import           System.FilePath            ((</>))
 import           Data.Aeson
 import           Data.Proxy
 import           Data.Monoid
-import           Data.Bool                 (bool)
+import           Data.Bool                  (bool)
 import           Control.Monad
 import           Control.Monad.Reader
 import           Control.Monad.Except
 import           Data.Maybe
-import           Network.HTTP.Types.Status (statusCode)
+import           Network.HTTP.Types.Status  (statusCode)
 import           Text.URI
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
@@ -38,7 +39,11 @@ makeRequest :: forall proxy p a. (FromJSON a, Payload p) => RequestMethod -> Str
 makeRequest method uri queryParams mbPayload = do
   client <- ask
   let uri' = uri <> maybe mempty showQueryParams queryParams
-  when (isNothing $ parseURI uri') $ throwError $ "URI cannot be parsed: " <> uri'
+  when (isNothing $ parseURI uri') $ throwError 
+    DoErr { errType  = InternalError
+          , errTitle = "URI cannot be parsed:"
+          , errBody  = T.pack uri'
+          }
   manager <- liftIO newTlsManager
   initialRequest <- liftIO $ parseRequest uri'
   let request = initialRequest { method = BSC.pack $ show method
@@ -49,10 +54,23 @@ makeRequest method uri queryParams mbPayload = do
   let request' = maybe request (\payload -> request { requestBody = RequestBodyLBS (encode payload) }) mbPayload
   response <- liftIO $ httpLbs request' manager
   let respStatus = statusCode $ responseStatus response
-  when (respStatus < 200 || respStatus > 300) $ throwError $ "Non-success response: " <> show respStatus <> "Body:" <> show (responseBody response)
+  when (respStatus == 401) $ throwError
+    DoErr { errType  = AuthenticationError
+          , errTitle = "Your API token is invalid"
+          , errBody  = ""
+          }
+  when (respStatus < 200 || respStatus > 300) $ throwError
+    DoErr { errType  = HttpError
+          , errTitle = "Non-success response received"
+          , errBody  = T.pack $ LBSC.unpack (responseBody response)
+          }
   let body = bool (responseBody response) "[]" (respStatus == 204)
   case (eitherDecode body :: Either String a) of
-    Left err -> throwError $ "Error occured for response body:" <> BSC.unpack (LBS.toStrict $ responseBody response) <> err
+    Left err -> throwError
+      DoErr { errType  = JSONConversionError
+            , errTitle = "Error occured for response body"
+            , errBody  = T.pack $ BSC.unpack (LBS.toStrict $ responseBody response) <> err
+            }
     Right resource -> return resource
 
 {- `get` that is working with absolute uris -}
