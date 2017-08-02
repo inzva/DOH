@@ -41,7 +41,7 @@ createViaSshKeys = do
   forM_ droplets $ \dropletId -> performDropletAction dropletId (TakeSnapshot (Just "bulk snapshot"))
 ```
 
-For full documentation and reference, see: http://hackage.haskell.org/package/DOH-0.1.1.1/docs/Network-DigitalOcean.html
+For full documentation and reference, see: http://hackage.haskell.org/package/DOH-0.1.2.0
 
 # Contributing
 What can you do?

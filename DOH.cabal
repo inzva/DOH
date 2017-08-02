@@ -2,7 +2,7 @@
 -- see http://haskell.org/cabal/users-guide/
 
 name:                DOH
-version:             0.1.1.1
+version:             0.1.2.0
 synopsis:            Complete API bindings for DigitalOcean API V2
 description:         Complete API bindings for DigitalOcean API V2
                      .
