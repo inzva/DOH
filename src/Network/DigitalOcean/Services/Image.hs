@@ -77,16 +77,19 @@ instance ToJSON ImageAction where
 instance Payload ImageAction
 
 data PublicImage =
-    Custom String
-  | Predefined PredefinedImage
+    WithImageId Integer
+  | WithImageSlug String
+  | WithPredefinedImage PredefinedImage
 
 instance Show PublicImage where
-  show (Custom value) = show value
-  show (Predefined image) = show image
+  show (WithImageId value) = show value
+  show (WithImageSlug value) = show value
+  show (WithPredefinedImage image) = show image
 
 instance ToJSON PublicImage where
-  toJSON (Custom value) = toJSON value
-  toJSON (Predefined image) = toJSON image
+  toJSON (WithImageId value) = toJSON value
+  toJSON (WithImageSlug value) = toJSON value
+  toJSON (WithPredefinedImage image) = toJSON image
 
 data PredefinedImage =
     CoreosBeta
