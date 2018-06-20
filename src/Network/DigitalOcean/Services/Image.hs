@@ -77,6 +77,18 @@ instance ToJSON ImageAction where
 instance Payload ImageAction
 
 data PublicImage =
+    Custom String
+  | Predefined PredefinedImage
+
+instance Show PublicImage where
+  show (Custom value) = show value
+  show (Predefined image) = show image
+
+instance ToJSON PublicImage where
+  toJSON (Custom value) = toJSON value
+  toJSON (Predefined image) = toJSON image
+
+data PredefinedImage =
     CoreosBeta
   | Centos65x32
   | Centos65x64
@@ -146,10 +158,10 @@ data PublicImage =
   | Gitlab1604
   | Redmine
 
-instance ToJSON PublicImage where
+instance ToJSON PredefinedImage where
   toJSON = toJSON . show
 
-instance Show PublicImage where
+instance Show PredefinedImage where
   show CoreosBeta        = "coreos-beta"
   show Centos65x32       = "centos-6-5-x32"
   show Centos65x64       = "centos-6-5-x64"

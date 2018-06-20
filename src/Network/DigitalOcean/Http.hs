@@ -23,7 +23,7 @@ import           Control.Monad.Reader
 import           Control.Monad.Except
 import           Data.Maybe
 import           Network.HTTP.Types.Status  (statusCode)
-import           Text.URI
+import           Network.URI
 -----------------------------------------------------------------
 import           Network.DigitalOcean.Types
 import           Network.DigitalOcean.Utils.Pagination

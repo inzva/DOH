@@ -46,9 +46,9 @@ showQueryParams = \case
   [] -> ""
   ls -> "?" <> (intercalate "&" . map (\(k, v) -> k <> "=" <> v) $ ls)
 
-class (FromJSON a, Show a, FromJSON (PaginationState a)) => Paginatable a where
+class (FromJSON a, Show a, FromJSON (PaginationState a)) => Paginatable a
 
-data Paginatable a => PaginationState a = PaginationState
+data PaginationState a = PaginationState
   { curr     :: [a]
   , page     :: Int
   , nextUrl  :: Maybe String
