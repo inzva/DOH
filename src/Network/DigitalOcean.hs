@@ -35,8 +35,8 @@ createViaSshKeys :: 'DO' ()
 createViaSshKeys = do
   -- Read a public key from a key pair and create ssh keys on DigitalOcean with it
   pubKey <- liftIO $ readFile \"\/Users\/yigitozkavci\/.ssh\/do_api_rsa.pub\"
-  sshKey <- 'createSSHKey' ('SSHKeyPayload' \"my ssh key\" pubKey) 
-  
+  sshKey <- 'createSSHKey' ('SSHKeyPayload' \"my ssh key\" pubKey)
+
   -- Create 2 droplets with our newly uploaded ssh keys
   let dropletPayload = 'IDropletPayload' \"nyc3\" \"512mb\" 'Ubuntu1404x64' (Just [sshkeyFingerprint sshKey]) Nothing Nothing Nothing Nothing Nothing Nothing Nothing
   droplets <- map dropletId <$\> 'createDroplets' ["droplet-1", "droplet-2"] dropletPayload
@@ -222,7 +222,7 @@ getImages :: Maybe PaginationConfig -> ImageOptions -> DO [Image]
 getImages config ImageOptions {..} =
   getPaginated config ImagesEndpoint (Just queryParams)
   where
-    queryParams = 
+    queryParams =
       maybe [] ((:[]) . ("type",) . show) imageType' ++
       bool [] [("private", "true")] isPrivate
 
@@ -247,7 +247,7 @@ deleteImage :: ImageId -> DO ()
 deleteImage id' = delete' (ImageEndpoint id')
 
 performImageAction :: ImageId -> ImageAction -> DO Action
-performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing 
+performImageAction id' = fmap unResponse . post (ImageActionsEndpoint id') Nothing
 
 -- * Sizes
 getSizes :: DO [Size]
@@ -294,7 +294,7 @@ getNeighbors :: DO Neighbors
 getNeighbors = unResponse <$> get' DropletsNeighborsEndpoint
 
 performDropletAction :: DropletId -> DropletAction -> DO Action
-performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') Nothing 
+performDropletAction id' = fmap unResponse . post (DropletActionsEndpoint id') Nothing
 
 {- Warning! Currently has issue with the response format, see:
  - https://github.com/digitalocean/api-v2/issues/164
@@ -403,7 +403,7 @@ createSSHKey :: SSHKeyPayload -> DO SSHKey
 createSSHKey = fmap unResponse . post SSHKeysEndpoint Nothing
 
 getSSHKey :: Either SSHKeyId String -> DO SSHKey
-getSSHKey idn = get' $ case idn of
+getSSHKey idn = fmap unResponse . get' $ case idn of
   Left id' -> SSHKeyEndpoint id'
   Right fingerprint -> SSHKeyWithFingerprintEndpoint fingerprint
 
